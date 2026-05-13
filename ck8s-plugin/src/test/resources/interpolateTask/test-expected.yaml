@@ -1,0 +1,9 @@
+name: "test"
+kind: "/aep/Configuration"
+
+clientId: "test-client"
+environmentTier: "dev"
+
+aep:
+  externalDatabase: false
+  test: "test-value"

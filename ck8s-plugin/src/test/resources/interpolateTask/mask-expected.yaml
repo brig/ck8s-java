@@ -1,0 +1,6 @@
+aep:
+  id: "test-aep"
+
+  cognito:
+    enabled: true
+    mode: "_*****"

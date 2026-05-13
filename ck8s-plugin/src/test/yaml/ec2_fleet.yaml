@@ -1,0 +1,24 @@
+version: "0.12"
+provider: "aws"
+authentication: credentials
+configuration:
+  aws_region: "us-east-2"
+  aws_access_key: "xxx"
+  aws_secret_key: "yyy"
+resources:
+  - type: launch_template
+    variables:
+      launch_template_name: "fleeting"
+      launch_template_instance_type: "m5.xlarge"
+      launch_template_instance_profile: "ConcordCICDWorker"
+      launch_template_keypair: "automation"
+      launch_template_user_data: "provisio.sh"
+      launch_template_volume_size: 50
+  - type: ec2_fleet
+    variables:
+      vpc_name: "default"
+      ec2_fleet_name: "fleeting"
+      ec2_fleet_tags:
+        provisio.bucketPath: "s3://myco-artifacts/releases"
+        provisio.installerProfile: "myco-concord-agent"
+        provisio.applicationCoordinate: "ca.vanzyl:myco-concord-agent:tar.gz:1.0.0"

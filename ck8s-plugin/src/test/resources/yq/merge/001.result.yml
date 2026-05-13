@@ -1,0 +1,8 @@
+field:
+  g: wizz
+fieldA:
+  k: v
+  k2: v2
+fieldObj:
+  - one
+fieldB: dog

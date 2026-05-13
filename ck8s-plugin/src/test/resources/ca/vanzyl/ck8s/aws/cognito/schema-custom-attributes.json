@@ -1,0 +1,68 @@
+[
+  {
+    "Name": "ad-groups",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "256"
+    }
+  },
+  {
+    "Name": "ad-groups2",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "1024"
+    }
+  },
+  {
+    "Name": "ad-group-short",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "32"
+    }
+  },
+  {
+    "Name": "ad-security-groups",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "2048"
+    }
+  },
+  {
+    "Name": "azure-ad-groups",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "2048"
+    }
+  },
+  {
+    "Name": "sso_groups",
+    "AttributeDataType": "String",
+    "DeveloperOnlyAttribute": false,
+    "Mutable": true,
+    "Required": false,
+    "StringAttributeConstraints": {
+      "MinLength": "1",
+      "MaxLength": "2048"
+    }
+  }
+]

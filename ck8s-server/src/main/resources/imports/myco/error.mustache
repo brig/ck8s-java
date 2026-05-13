@@ -1,0 +1,24 @@
+configuration:
+  runtime: "concord-v2"
+  dependencies:
+    - "mvn://com.walmartlabs.concord.plugins:terraform-task:1.32.1"
+    - "mvn://ca.vanzyl.concord:concord-k8s-plugin:{{k8sSystem.version}}"
+    - "mvn://ca.vanzyl.concord:concord-terraform-processor-plugin:{{k8sSystem.version}}"
+  arguments:
+    clusterRequest:
+      clusterId: "test-cluster-id"
+      aws:
+        accessKey: "accessKey"
+        secretKey: "secretKey"
+
+flows:
+
+  buildK8sCluster:
+    - try:
+      - ${k8sEvent.provisioningStarted()}
+      - ${k8sEvent.helmInstall('chart-one')}
+      - ${k8sEvent.helmInstall('chart-two')}
+      - ${k8sEvent.throwException('Error authenticating to AWS')}
+
+      error:
+        - ${k8sEvent.provisioningError(lastError)}

@@ -1,0 +1,6 @@
+[
+  {
+    "PolicyName": "ci-test",
+    "PolicyArn": "arn:aws:iam::test"
+  }
+]

@@ -1,0 +1,59 @@
+
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "s3RwAccess",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListBucket",
+        "s3:PutObject*",
+        "s3:GetObject*",
+        "s3:DeleteObject*",
+        "s3:RestoreObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*.******.com",
+        "arn:aws:s3:::*.******.com/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "s3RoAccess",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListBucket",
+        "s3:GetObject*",
+        "s3:RestoreObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::*.******.com",
+        "arn:aws:s3:::*.******.com/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "asmRead",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:123456789012:secret:data/deploy/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Sid": "ecsRestart",
+      "Action": [
+        "ecs:UpdateService",
+        "ecs:DescribeServices"
+      ],
+      "Resource": [
+        "arn:aws:ecs:*:123456789012:service/*/*"
+      ],
+      "Effect": "Allow"
+    }
+  ]
+}

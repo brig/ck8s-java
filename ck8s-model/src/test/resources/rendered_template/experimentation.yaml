@@ -1,0 +1,167 @@
+# ------------------------------------------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------------------------------------------
+imports:
+  # import remote resources
+  - mvn:
+      url: "mvn://ca.vanzyl.concord:concord-k8s-builder:zip:@VERSION@"
+      dest: "."
+  - mvn:
+      url: "mvn://ca.vanzyl.concord:concord-terraform:zip:@VERSION@"
+      dest: "."
+
+configuration:
+  debug: true
+  runtime: "concord-v2"
+  events:
+    recordTaskInVars: true
+    recordTaskOutVars: true
+    truncateMaxStringLength: 2048
+    inVarsBlacklist:
+      - "aws"
+      - "awsAccessKey"
+      - "awsSecretKey"
+      - "clusterRequest"
+      - "configuration"
+      - "envars"
+      - "secrets"
+  dependencies:
+    - "mvn://com.walmartlabs.concord.plugins:terraform-task:1.32.1"
+    - "mvn://ca.vanzyl.concord:concord-k8s-plugin:@VERSION@"
+    - "mvn://ca.vanzyl.concord:concord-terraform-processor-plugin:@VERSION@"
+
+  arguments:
+    # ------------------------------------------------------------------------------------------------------------------
+    # Kubernetes
+    # ------------------------------------------------------------------------------------------------------------------
+    kubernetesVersion: "1.16"
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Terraform
+    # ------------------------------------------------------------------------------------------------------------------
+    # Terraform is used in early parts of the provisioning in AWS to create the VPC. Terraform is likely to be used
+    # during provisioning in Azure, and GCP as well which is why this is defined here in the main template.
+    # ------------------------------------------------------------------------------------------------------------------
+    terraformDebug: false
+    terraformVersion: "0.12.24"
+    terraformResources: "terraform-resources"
+    terraformDirectory: "terraform"
+    forceDestroy: true
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applications
+    # ------------------------------------------------------------------------------------------------------------------
+    # Applications that are installed at the request of the client using the ClusterProvisioningRequest.
+    # ------------------------------------------------------------------------------------------------------------------
+    k8sClusterApplications:
+      - key: myhive
+        type: hive
+      - key: mypresto
+        type: trino
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # Cluster Request
+    # ------------------------------------------------------------------------------------------------------------------
+    clusterRequest:
+      deploymentId: "4a84cca2-0737-11eb-a36e-f305d545ac42"
+      debug: true
+      profile: "myco"
+      account: "experimentation"
+      domain: "test.domain.com"
+      user: "test"
+      k8sVersion: "${kubernetesVersion}"
+      clusterName: "test-cluster"
+      environment: "production"
+      http01solver: "false"
+      region: "us-east-2"
+      clusterId: "test-cluster"
+      provider: aws
+      aws:
+        homeRegion: us-west-2
+        backupRegion: us-east-1
+        authentication: "credentials"
+        roleArn: ""
+        externalId: ""
+        accessKey: "${secrets.get('test-awsAccessKey')}"
+        secretKey: "${secrets.get('test-awsSecretKey')}"
+        sessionToken: "${secrets.get('test-awsSessionToken')}"
+        hostedZoneId: "Z1T2PRVUBFACTP"
+        ingressTags: "sb_common.cost_center=cloud_platform"
+        tags:
+          # ----------------------------------------------------------------------------------------------
+          # Standard tags that are added by default
+          # ----------------------------------------------------------------------------------------------
+          creator: "concord"
+          session: "test-cluster"
+          # ----------------------------------------------------------------------------------------------
+          # User specific tags that are added
+          # ----------------------------------------------------------------------------------------------
+        builder: eksctl
+        eksctl:
+          cloudWatchLogging: false
+          nodeGroups:
+            - nodeGroupName: "standard-nodes-group-1"
+              instanceType: "m5.xlarge"
+              desiredCapacity: 2
+              minSize: 2
+              maxSize: 15
+              volumeSize: 200
+        terraformResources:
+          - type: vpc-sps
+            variables:
+              vpc_name: "${clusterRequest.clusterId}-vpc"
+              vpc_cidr: "10.10.0.0/24"
+              vpc_availability_zones:
+                us-east-2a:
+                  public_subnet_cidr: ${vpcUtils.subnet("10.10.0.0/24",6, 0)}
+                  private_subnets_cidr:
+                    - ${vpcUtils.subnet("10.10.0.0/24", 6, 1)}
+                  tags: { }
+                us-east-2b:
+                  public_subnet_cidr: ${vpcUtils.subnet("10.10.0.0/24", 6, 2)}
+                  private_subnets_cidr:
+                    - ${vpcUtils.subnet("10.10.0.0/24", 6, 3)}
+                  tags: { }
+              vpc_pcxs:
+          - type: eks
+            variables:
+              cluster_name: "${clusterRequest.clusterName}"
+
+flows:
+  destroyK8sCluster:
+    - try:
+        - name: "Notify: destroyStarted"
+          expr: ${k8sEvent.destroyStarted()}
+
+        - call: provisioningFlow
+          in:
+            flow: destroy
+
+        - name: "Notify: destroyCompleted"
+          expr: ${k8sEvent.destroyCompleted()}
+      error:
+        - name: "Notify: provisioningError"
+          expr: ${k8sEvent.provisioningError(lastError)}
+        - name: "Re-throw the error"
+          throw: ${lastError}
+
+  buildK8sCluster:
+    - try:
+        - name: "Notify: provisioningStarted"
+          expr: ${k8sEvent.provisioningStarted()}
+
+        - call: k8sClusterProvisioning
+
+        - name: "Notify: k8sClusterResourcesAvailable"
+          expr: ${k8sEvent.k8sClusterResourcesAvailable()}
+        - name: "Notify: provisioningCompleted"
+          expr: ${k8sEvent.provisioningCompleted()}
+      error:
+        - name: "Notify: provisioningError"
+          expr: ${k8sEvent.provisioningError(lastError)}
+        - name: "Re-throw the error"
+          throw: ${lastError}
+
+  onCancel:
+    - name: "Notify: provisioningCancelled"
+      expr: ${k8sEvent.provisioningCancelled()}

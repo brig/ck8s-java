@@ -1,0 +1,93 @@
+# ------------------------------------------------------------------------------------------------------------------
+# Imports
+# ------------------------------------------------------------------------------------------------------------------
+imports:
+  - mvn:
+      url: "mvn://ca.vanzyl.concord:concord-k8s-builder:zip:{{k8sSystem.version}}"
+      dest: "."
+  - mvn:
+      url: "mvn://ca.vanzyl.concord:concord-terraform:zip:{{k8sSystem.version}}"
+      dest: "."
+
+configuration:
+  debug: true
+  runtime: "concord-v2"
+  dependencies:
+    - "mvn://com.walmartlabs.concord.plugins:terraform-task:1.32.1"
+    - "mvn://ca.vanzyl.concord:concord-k8s-plugin:{{k8sSystem.version}}"
+    - "mvn://ca.vanzyl.concord:concord-terraform-processor-plugin:{{k8sSystem.version}}"
+  arguments:
+    clusterRequest:
+      deploymentId: "{{cluster.deploymentId}}"
+      domain: "google.com"
+      clusterId: "test-cluster-id"
+      provider: aws
+      profile: "myco"
+      aws:
+        accessKey: "accessKey"
+        secretKey: "secretKey"
+        tags:
+          creator: "concord"
+          session: "{{cluster.metadata.name}}"
+          {{#cluster.aws.tags.entrySet}}
+          {{key}}: {{value}}
+          {{/cluster.aws.tags.entrySet}}
+flows:
+
+  buildK8sCluster:
+    - try:
+      - log: "Hello! {{cluster.account}}"
+      - log: "accessKey: ${clusterRequest.aws.accessKey}"
+      - log: "secretKey: ${clusterRequest.aws.secretKey}"
+      - log: "appValue: ${applications['trino'].properties.foo}"
+      - log: "appValue: ${applications['trino'].properties.bar}"
+      - log: "appValue: ${applications['trino'].properties.baz}"
+      # These are defaults that are set
+      - log: "workerCpuRequest: ${applications['trino'].properties.workerCpuRequest}"
+      - log: "workerMemoryRequest: ${applications['trino'].properties.workerMemoryRequest}"
+
+      - task: k8sInventory
+        in:
+          action: createCluster
+          cluster:
+            deploymentId: ${clusterRequest.deploymentId}
+            metadata:
+              profile: ${clusterRequest.profile}
+              name: ${clusterRequest.clusterId}
+
+      - ${k8sEvent.provisioningStarted()}
+      - ${k8sEvent.helmInstall('chart-one')}
+      - ${k8sEvent.helmInstall('chart-two')}
+      - ${k8sEvent.helmUpgrade('chart-three')}
+      - ${k8sEvent.helmUpgrade('chart-four')}
+
+      # Inventory
+      - ${k8sContext.ingressAnnotation('test-ingress')}
+      - ${k8sContext.postManifest('test-manifest')}
+      - ${k8sContext.enableFeature('test-feature')}
+
+      - log: "annotations: ${k8sContext.ingressAnnotations(2).trim()}"
+      - log: "manifests: ${k8sContext.postManifests().get(0)}"
+      - log: "feature: ${k8sContext.featureEnabled('test-feature')}"
+
+      # Tags
+      - log: "creator: ${clusterRequest.aws.tags.creator}"
+      - log: "session: ${clusterRequest.aws.tags.session}"
+      - log: "tagkey0: ${clusterRequest.aws.tags.tagkey0}"
+      - log: "tagkey1: ${clusterRequest.aws.tags.tagkey1}"
+
+      # Even through Concord is done its provisioning operations the K8s cluster might still
+      # be processing requests to get the cluster to a state where we consider it ready, so
+      # we will wait until we know everything is available for the client.
+      - ${k8sWaiter.waitForAvailabilityOfApplication('google')}
+      - ${k8sEvent.k8sClusterResourcesAvailable()}
+
+      # All resources the client expects to be available are, so we can signal provisioning complete
+      - ${k8sEvent.provisioningCompleted()}
+
+      error:
+        - ${k8sEvent.provisioningError(lastError)}
+
+  destroyK8sCluster:
+    - ${k8sEvent.destroyStarted()}
+    - ${k8sEvent.destroyCompleted()}

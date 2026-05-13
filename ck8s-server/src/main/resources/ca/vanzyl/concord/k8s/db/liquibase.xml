@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet id="ck8s-00000" author="ybrigo@gmail.com">
+        <createTable tableName="CK8S_CONNECTED_CLUSTERS">
+            <column name="CLUSTER_ALIAS" type="varchar(256)" remarks="Connected concord cluster alias">
+                <constraints nullable="false" />
+            </column>
+            <column name="CLUSTER_GROUP_ALIAS" type="varchar(256)" remarks="Connected concord cluster group alias">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="CK8S_CONNECTED_CLUSTERS" columnNames="CLUSTER_ALIAS, CLUSTER_GROUP_ALIAS" />
+    </changeSet>
+
+    <changeSet id="ck8s-00010" author="ybrigo@gmail.com">
+        <addColumn tableName="CK8S_CONNECTED_CLUSTERS">
+            <column name="IS_ACTIVE" defaultValue="true" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

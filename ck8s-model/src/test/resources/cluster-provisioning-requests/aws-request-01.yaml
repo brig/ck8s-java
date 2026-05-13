@@ -1,0 +1,35 @@
+kind: K8sClusterDeployment
+metadata:
+  debug: true
+  organization: "myco"
+  project: "concord-k8s-builder"
+  name: "jason10016"
+  profile: "myco"
+domain: "{{metadata.name}}.myco.org"
+aws:
+  accessKeyId: "accessKeyId"
+  secretAccessKey: "secretAccessKey"
+  hostedZoneId: "Z1T2PRVUBFACTP"
+  cidr: "10.10.0.0/16"
+applications:
+  mypresto:
+    type: "trino"
+    subdomain: "mypresto"
+    version: "344.0.1"
+    properties:
+      version: "336-e"
+      workerCpu: "2"
+      workerMemory: "2Gi"
+      coordinatorCpu: "2"
+      coordinatorMemory: "2Gi"
+    catalogs:
+      tpch2:
+        connector.name: "tpch"
+    nodegroup:
+      minSize: 2
+      maxSize: 10
+      instanceType: "m5.xlarge"
+  concord:
+    type: "concord"
+  harbor:
+    type: "harbor"

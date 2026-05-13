@@ -1,0 +1,33 @@
+---
+properties:
+  type: object
+  EksCtlConfiguration:
+    $ref: '#/definitions/EksCtlConfiguration'
+
+definitions:
+
+  EksCtlConfiguration:
+    type: object
+    additionalProperties: false
+    properties:
+      Create:
+        $ref: '#/definitions/Create'
+        $schema: http://json-schema.org/draft-04/schema#
+
+  Create:
+    type: object
+    existingJavaType: 'ca.vanzyl.ck8s.tool.ToolCommandSupport'
+    additionalProperties: false
+    properties:
+      Cluster:
+        $ref: '#/definitions/Cluster'
+        $schema: http://json-schema.org/draft-04/schema#
+
+  Cluster:
+    type: object
+    additionalProperties: false
+    properties:
+      configFile:
+        type: string
+      kubeConfig:
+        type: string

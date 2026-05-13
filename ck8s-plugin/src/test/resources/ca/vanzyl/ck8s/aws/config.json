@@ -1,0 +1,77 @@
+{
+  "ImageId":"ami-latest",
+  "InstanceType":"m5.2xlarge",
+  "TagSpecifications":[
+    {
+      "ResourceType":"volume",
+      "Tags":[
+        {
+          "Key":"Name",
+          "Value":"test-worker-node"
+        },
+        {
+          "Key":"owner",
+          "Value":"ck8s"
+        },
+        {
+          "Key":"com.aetion/cluster",
+          "Value":"test"
+        },
+        {
+          "Key":"alpha.eksctl.io/nodegroup-type",
+          "Value":"managed"
+        },
+        {
+          "Key":"karpenter.sh/discovery",
+          "Value":"test"
+        },
+        {
+          "Key":"alpha.eksctl.io/nodegroup-name",
+          "Value":"test-workers"
+        }
+      ]
+    },
+    {
+      "ResourceType":"instance",
+      "Tags":[
+        {
+          "Key":"Name",
+          "Value":"test-worker-node"
+        },
+        {
+          "Key":"owner",
+          "Value":"ck8s"
+        },
+        {
+          "Key":"com.aetion/cluster",
+          "Value":"test"
+        },
+        {
+          "Key":"alpha.eksctl.io/nodegroup-type",
+          "Value":"managed"
+        },
+        {
+          "Key":"karpenter.sh/discovery",
+          "Value":"test"
+        },
+        {
+          "Key":"alpha.eksctl.io/nodegroup-name",
+          "Value":"test-workers"
+        }
+      ]
+    }
+  ],
+  "BlockDeviceMappings":[
+    {
+      "DeviceName":"/dev/xvda",
+      "Ebs":{
+        "VolumeType":"gp3",
+        "VolumeSize": 80,
+        "Iops": 3000,
+        "Throughput": 125
+      }
+    }
+  ],
+  "UserData": "some-data",
+  "SecurityGroupIds": ["1", "2", "3"]
+}

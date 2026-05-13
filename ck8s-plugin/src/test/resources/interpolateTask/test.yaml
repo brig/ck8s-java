@@ -1,0 +1,11 @@
+name: "${name}"
+kind: "/aep/Configuration"
+
+clientId: "${clientId}"
+environmentTier: "dev"
+
+aep:
+  externalDatabase: false
+  test: "test-value"
+  cognito:
+    uiUserPoolClientName: "${uiUserPoolClientName}"

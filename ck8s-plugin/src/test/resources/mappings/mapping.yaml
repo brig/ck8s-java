@@ -1,0 +1,21 @@
+itsAep:
+  - root: "ck8s-orgs"           # any changes in `ck8s-orgs`
+  - root: "ck8s-components"
+    exclude:
+      - "adip/.*"                # any changes in `ck8s-components` but exclude `ck8s-components/adip/.*`
+      - "vdi/.*"
+  - root: "ck8s-components-tests/aep"
+itsAdip:
+  - root: "ck8s-orgs"           # any changes in `ck8s-orgs`
+  - root: "ck8s-components"
+    exclude:
+      - "aep/.*"
+  - root: "ck8s-components-tests/adip"
+itsDatabricks:
+  - root: "ck8s-orgs"           # any changes in `ck8s-orgs`
+  - root: "ck8s-components"
+    include:
+      - "common/.*"
+      - "adip/.*"
+      - "databricks/.*"
+  - root: "ck8s-components-tests/databricks"

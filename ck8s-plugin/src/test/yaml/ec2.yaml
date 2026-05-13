@@ -1,0 +1,21 @@
+version: "0.12"
+provider: "aws"
+authentication: credentials
+configuration:
+  aws_region: "us-east-2"
+  aws_access_key: "xxx"
+  aws_secret_key: "yyy"
+  tags:
+    provisio.bucketPath: "s3://myco-artifacts/releases"
+    provisio.installerProfile: "myco-concord-agent"
+    provisio.applicationCoordinate: "ca.vanzyl:myco-concord-agent:tar.gz:1.0.0"
+resources:
+  - type: ec2
+    variables:
+      vpc_name: "default"
+      ec2_instance_name: "superduper"
+      ec2_instance_type: "m5.xlarge"
+      ec2_instance_profile: "ConcordCICDWorker"
+      ec2_keypair: "automation"
+      ec2_user_data: "provisio.sh"
+      ec2_root_block_device_size: 50

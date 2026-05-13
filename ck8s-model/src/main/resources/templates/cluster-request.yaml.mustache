@@ -1,0 +1,70 @@
+configuration:
+  arguments:
+    clusterRequest:
+      debug: {{cluster.metadata.debug}}
+      profile: "{{cluster.profile}}"
+      account: "{{cluster.account}}"
+      domain: "{{cluster.domain}}"
+      user: "automation"
+      k8sVersion: "1.14"
+      clusterName: "will-006"
+      environment: "production"
+      region: "us-east-2"
+      clusterId: "${clusterRequest.clusterName}-${clusterRequest.region}-${clusterRequest.environment}"
+      provider: aws
+      aws:
+        homeRegion: us-west-2
+        backupRegion: us-east-1
+        accessKey: "${secrets.get('{{cluster.aws.secretRef}}-awsAccessKey')}"
+        secretKey: "${secrets.get('{{cluster.aws.secretRef}}-awsSecretKey')}"
+        hostedZoneId: "Z1T2PRVUBFACTP"
+        ingressTags: "sb_common.cost_center=cloud_platform"
+        tags:
+          creator: concord
+          session: ${clusterRequest.clusterName}
+      builder:
+        id: eksctl
+        version: 0.7.0
+        nodeGroups:
+          - nodeGroupName: "standard-worker-group-1"
+            instanceType: "c5.2xlarge"
+            desiredCapacity: 3
+            minSize: 1
+            maxSize: 10
+            volumeSize: 200
+      terraformResources:
+        - type: vpc
+          variables:
+            vpc_name: "${clusterRequest.clusterId}-vpc"
+            vpc_cidr: "10.7.0.0/24"
+            public_subnet_list:
+              - us-east-2a
+              - us-east-2b
+              - us-east-2c
+            private_subnet_list:
+              - us-east-2a
+              - us-east-2b
+              - us-east-2c
+        - type: eks
+          variables:
+            cluster_name: "${clusterRequest.clusterName}"
+
+flows:
+  build:
+    - call: resilientFlow
+      in:
+        flow: ${item}
+      withItems:
+        - cluster
+        - helm-install
+        - ingress-nginx
+        - external-dns
+        - aws-ebs-csi-driver
+        - autoscaler
+        - metrics-server
+        - cert-manager
+        - kubed
+        - postManifests
+        {{#cluster.applications}}
+        - {{.}}
+        {{/cluster.applications}}

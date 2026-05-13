@@ -1,0 +1,9 @@
+ck8s-plugin/.concord_tmp
+.idea/
+*.iml
+.DS_Store
+target/
+*.tgz
+*.tar.gz
+pom.xml.versionsBackup
+.run

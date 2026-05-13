@@ -1,0 +1,12 @@
+configuration:
+  runtime: concord-v2
+  events:
+    recordTaskInVars: true
+    recordTaskOutVars: true
+    recordEvents: true
+  arguments:
+    clusterRequest: <CLUSTER_REQUEST>
+  dependencies:
+    - "mvn://com.walmartlabs.concord.plugins.basic:http-tasks:1.101.0"
+    - "mvn://com.walmartlabs.concord.plugins.basic:resource-tasks:1.101.0"
+    - "mvn://com.walmartlabs.concord.plugins.basic:lock-tasks:1.101.0"

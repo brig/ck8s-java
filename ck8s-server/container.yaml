@@ -1,0 +1,10 @@
+registry: ghcr.io
+repository: concord-workflow/ck8s
+image: ck8s-server
+version: {{maven.version}}
+buildArgs:
+  MAVEN_VERSION: {{maven.version}}
+  CONCORD_VERSION: 1.55.0
+run:
+  shell: /bin/sh
+  ports: 8001:8001

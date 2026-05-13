@@ -1,0 +1,64 @@
+package ca.vanzyl.ck8s.aws.iam.actions;
+
+import ca.vanzyl.ck8s.MockTestContext;
+import ca.vanzyl.ck8s.aws.CredentialsProvider;
+import ca.vanzyl.ck8s.aws.StsTask;
+import ca.vanzyl.ck8s.aws.iam.IamClientFactory;
+import ca.vanzyl.ck8s.aws.iam.IamTaskParams;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmartlabs.concord.runtime.common.injector.InstanceId;
+import com.walmartlabs.concord.runtime.v2.runner.PersistenceService;
+import com.walmartlabs.concord.runtime.v2.sdk.MapBackedVariables;
+import org.junit.Ignore;
+import org.junit.Test;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.iam.model.Tag;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.mockito.Mockito.mock;
+
+@Ignore
+public class VerifyRoleActionTest {
+
+    private static final String TRUST_POLICY = """
+            {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": "ec2.amazonaws.com"
+                  },
+                  "Action": "sts:AssumeRole"
+                }
+              ]
+            }
+            """;
+
+    @Test
+    public void test() throws Exception {
+        var context = new MockTestContext();
+        var credentialsProvider = new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
+        var factory = new IamClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()));
+        var action = new VerifyRoleAction(factory);
+
+        new StsTask(credentialsProvider, context).execute(new MapBackedVariables(Map.of(
+                "action", "assume-role",
+                "roleArn", "arn:aws:iam::123456789:role/brig-test-ro-role",
+                "roleSessionName", "test",
+                "region", "us-east-1",
+                "profile", "sandbox"))
+        );
+
+        var params = new IamTaskParams.CreateRoleParams(
+                new IamTaskParams.BaseParams("sandbox", Region.US_EAST_1, false),
+                "brig-test-role", TRUST_POLICY, List.of(Tag.builder().key("key1").value("value1").build()));
+
+        var result = action.execute(new MockTestContext(), params);
+        System.out.println(result);
+    }
+
+}

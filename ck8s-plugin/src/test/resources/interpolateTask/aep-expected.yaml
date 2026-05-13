@@ -1,0 +1,14 @@
+aep:
+  id: "test-aep"
+  domain: "test-aep.local"
+  cognito:
+    enabled: true
+    mode: "DEFAULT"
+    userPoolName: "test-aep-local"
+  keycloakDomain: "identity-provider.local"
+  keycloakDomain2: "identity-provider.local"
+  keycloak:
+    enabled: false
+    publicDomain: "identity-provider.local"
+    publicDomain2:
+      v2: "identity-provider.local"

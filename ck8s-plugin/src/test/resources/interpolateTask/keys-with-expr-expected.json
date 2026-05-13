@@ -1,0 +1,3 @@
+{
+  "kubernetes.io/cluster/test:client" : "test"
+}

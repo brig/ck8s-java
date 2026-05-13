@@ -1,0 +1,17 @@
+aep:
+  id: "${aepId}"
+  domain: "${aep.id}.${clusterRequest.domain}"
+
+  cognito:
+    enabled: true
+    mode: "DEFAULT"
+    userPoolName: "${aep.domain.replace('.', '-')}"
+
+  keycloakDomain: "${aep.keycloak.publicDomain}"
+  keycloakDomain2: "${aep.keycloak.publicDomain2.v2}"
+
+  keycloak:
+    enabled: false
+    publicDomain: "identity-provider.${clusterRequest.domain}"
+    publicDomain2:
+      v2: "identity-provider.${clusterRequest.domain}"

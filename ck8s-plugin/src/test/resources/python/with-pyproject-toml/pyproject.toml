@@ -1,0 +1,8 @@
+[build-system]
+requires = ["setuptools"]
+
+[project]
+name = "pyproject-test"
+version = "0.0.1"
+
+dependencies = ["example-pypi-package"]

@@ -1,0 +1,3 @@
+{
+  "kubernetes.io/cluster/${client.id.replace('-', ':')}": "${name}"
+}

@@ -1,0 +1,6 @@
+aep:
+  id: "${aepId}"
+
+  cognito:
+    enabled: true
+    mode: "DEFAULT"

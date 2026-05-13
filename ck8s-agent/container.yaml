@@ -1,0 +1,10 @@
+registry: ghcr.io
+repository: concord-workflow/ck8s
+image: ck8s-agent
+version: {{maven.version}}
+buildArgs:
+  MAVEN_VERSION: {{maven.version}}
+run:
+  shell: /bin/bash
+  mounts:
+    cache: "${HOME}/.provisio/bin/cache:/root/.provisio/bin/cache"

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ca.vanzyl.concord.ck8s</groupId>
+        <artifactId>ck8s</artifactId>
+        <version>3.0.5-SNAPSHOT</version>
+    </parent>
+    <artifactId>ck8s-agent</artifactId>
+    <name>CK8s :: Agent Image</name>
+
+    <properties>
+        <concord.plugins.version>2.12.0</concord.plugins.version>
+
+        <mica.version>0.0.34</mica.version>
+
+        <opentelemetry.plugin.version>0.1.15</opentelemetry.plugin.version>
+        <skip.plugins.cache>true</skip.plugins.cache>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ca.vanzyl.concord.ck8s</groupId>
+            <artifactId>ck8s-plugin</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Can probably replace with this provisio -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-docker-stuff</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.walmartlabs.concord</groupId>
+                                    <artifactId>concord-agent</artifactId>
+                                    <version>${concord.version}</version>
+                                    <classifier>dist</classifier>
+                                    <type>tar.gz</type>
+                                    <destFileName>agent.tar.gz</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>dev.ybrig.concord</groupId>
+                <artifactId>dependency-downloader-maven-plugin</artifactId>
+                <version>0.0.16</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>download</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.plugins.cache}</skip>
+                            <debug>true</debug>
+                            <outputPluginsListFile>${project.build.directory}/default-dependencies</outputPluginsListFile>
+                            <plugins>
+                                <param>mvn://ca.vanzyl.concord.ck8s:ck8s-plugin:${project.version}</param>
+
+                                <param>mvn://ca.ibodrov.mica:mica-concord-task:${mica.version}</param>
+
+                                <param>mvn://org.codehaus.groovy:groovy-all:pom:3.0.22</param>
+                                <param>mvn://org.postgresql:postgresql:42.7.4</param>
+
+                                <param>mvn://com.walmartlabs.concord.plugins:aws-tasks:${concord.plugins.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins:git:${concord.plugins.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins:jira-task:${concord.plugins.version}</param>
+
+                                <param>mvn://dev.ybrig.concord.plugins:opentelemetry:${opentelemetry.plugin.version}</param>
+
+                                <param>mvn://com.walmartlabs.concord.plugins.basic:http-tasks:${concord.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins.basic:slack-tasks:${concord.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins.basic:concord-tasks:${concord.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins.basic:file-tasks:${concord.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins.basic:mock-tasks:${concord.version}</param>
+                            </plugins>
+                            <downloadedFilesPath>${project.build.directory}/deps</downloadedFilesPath>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>docker-context-create</id>
+                    </execution>
+                    <execution>
+                        <id>docker-build</id>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>build-plugins-cache</id>
+            <properties>
+                <skip.plugins.cache>false</skip.plugins.cache>
+            </properties>
+        </profile>
+    </profiles>
+</project>

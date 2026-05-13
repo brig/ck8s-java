@@ -1,0 +1,29 @@
+version: 0.12
+provider: aws
+authentication: credentials
+configuration:
+  aws_region: us-east-2
+  aws_access_key: "xxx"
+  aws_secret_key: "yyy"
+  tags:
+    creator: concord
+    session: jvz-001
+resources:
+  - type: vpc-sps
+    variables:
+      vpc_name: jvz-vpc
+      vpc_cidr: 10.206.0.0/18
+      vpc_availability_zones:
+        us-east-2a:
+          public_subnet_cidr: 10.1.0.0/24
+          private_subnets_cidr:
+            - cidr0
+            - cidr1
+        us-east-2b:
+          public_subnet_cidr: 10.1.0.0/24
+          private_subnets_cidr:
+            - cidr0
+            - cidr1
+  - type: eks
+    variables:
+      cluster_name: jvz-cluster

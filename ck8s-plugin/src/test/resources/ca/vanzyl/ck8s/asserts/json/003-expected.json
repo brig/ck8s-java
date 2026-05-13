@@ -1,0 +1,274 @@
+{
+  "apiVersion": "concord.walmartlabs.com/v1alpha1",
+  "kind": "AgentPool",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{"apiVersion":"concord.walmartlabs.com/v1alpha1","kind":"AgentPool","metadata":{"annotations":{},"name":"agentpool-ci1-b-default","namespace":"concord"},"spec":{"autoScale":true,"autoScaleStrategy":"linear","configMap":{"apiVersion":"v1","data":{"agent.conf":"concord-agent {
+  capabilities = {
+    flavor: "kubernetes"
+    clusterAlias: ["ci1-b", "ci1"] 
+    k8s: {
+      cluster: "ci1-b"
+      namespace: "concord"
+      pod = ${MY_POD_NAME}
+    }
+  }
+
+  workersCount = 1
+
+  explicitlyResolveV1Client = false
+
+  mavenOfflineMode = true
+
+  maintenanceModeListenerHost = "0.0.0.0"
+
+  prefork {
+    maxAge = "30 seconds"
+    maxCount = 1
+  }
+
+  server {
+    # TODO use HTTPS and WSS for communications between the Server and agents
+    apiBaseUrl = "http://concord-server:8001"
+    websocketUrl = "ws://concord-server:8001/websocket"
+    connectTimeout = "30 seconds"
+    readTimeout = "1 minute"
+    apiKey = "***"
+  }
+
+  git {
+    oauth = "ghp_***"
+    skip = false
+  }
+
+  runner {
+    jvmParams = ["-Xmx512m","-XX:+UseG1GC","-XX:+ExitOnOutOfMemoryError"]
+  }
+}
+","mvn.json":"{
+  "repositories" : [{"id":"local","url":"file:///home/concord/.m2/repository","snapshotPolicy":{"enabled":false},"releasePolicy":{"enabled":true,"checksumPolicy":"ignore"}}]
+}
+","preStopHook.sh":"workers="1"
+num_retries=0
+MAX_RETRIES=5
+
+while [ "$workers" != "0" ] \u0026\u0026 [ "$num_retries" -lt "$MAX_RETRIES" ]
+do
+  echo "[$HOSTNAME]: Agent is still executing a process.. enabling maintenance mode and checking the number of workers"
+
+  mmode_response=`wget -qO - --post-data="" http://127.0.0.1:8010/maintenance-mode`
+        
+  mmode_enabled=`echo $mmode_response | sed -n 's/^.*"maintenanceMode":\([a-z]*\).*$/\1/p'`
+  if [ "$mmode_enabled" = "true" ]; then
+    echo "[$HOSTNAME]: Maintenance mode enabled: $mmode_enabled"
+
+    workers=`echo $mmode_response | sed -n 's/^.*"workersAlive":\([0-9]*\).*$/\1/p'`
+    echo "[$HOSTNAME]: Number of workers: $workers"
+
+  else
+    echo "[$HOSTNAME]: trouble enabling maintenance mode"
+    num_retries=`expr $num_retries + 1`
+  fi
+
+sleep 5
+done
+
+if [ "$num_retries" -ge "$MAX_RETRIES" ]; then
+  echo "[$HOSTNAME]: Number of retries to enable exceeded $MAX_RETRIES times. Exiting ..."
+  exit 1
+fi
+
+echo "[$HOSTNAME]: There are no processes running on this agent. Terminating..."
+"},"kind":"ConfigMap","metadata":{"name":"%%configMapName%%"}},"maxSize":10,"minSize":0,"pod":{"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{"karpenter.sh/do-not-disrupt":"true"},"labels":{"app":"%%app%%","concordCfgHash":"%%concordCfgHash%%","poolName":"%%poolName%%"},"name":"%%podName%%"},"spec":{"affinity":null,"containers":[{"env":[{"name":"CONCORD_JAVA_OPTS","value":"-Xmx256m"},{"name":"CONCORD_TMP_DIR","value":"/tmp/concord"},{"name":"CONCORD_DOCKER_LOCAL_MODE","value":"false"},{"name":"DOCKER_HOST","value":"tcp://localhost:6666"},{"name":"CONCORD_CFG_FILE","value":"/opt/concord/conf/agent.conf"},{"name":"CONCORD_MAVEN_CFG","value":"/opt/concord/conf/mvn.json"},{"name":"MY_POD_NAME","valueFrom":{"fieldRef":{"fieldPath":"metadata.name"}}},{"name":"MY_POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}},{"name":"MY_POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}},{"name":"USER_AGENT","value":"k8s-agent $(MY_POD_NAMESPACE)/$(MY_POD_NAME) @ $(MY_POD_IP)"},{"name":"CONCORD_INSTANCE_ALIAS","value":"ci1-b"},{"name":"CONCORD_INSTANCE_GROUP_ALIAS","value":"ci1"}],"image":"ghcr.io/concord-workflow/ck8s/ck8s-agent:1c610f5","imagePullPolicy":"Always","lifecycle":{"preStop":{"exec":{"command":["sh","/opt/concord/hooks/preStopHook.sh"]}}},"name":"agent","ports":[{"containerPort":8010}],"resources":{"limits":{"cpu":2,"memory":"4096M"},"requests":{"cpu":2,"memory":"4096M"}},"volumeMounts":[{"mountPath":"/opt/concord/conf/agent.conf","name":"cfg","subPath":"agent.conf"},{"mountPath":"/opt/concord/conf/mvn.json","name":"cfg","subPath":"mvn.json"},{"mountPath":"/opt/concord/hooks/preStopHook.sh","name":"cfg","subPath":"preStopHook.sh"},{"mountPath":"/tmp","name":"process-tmp"}]}],"imagePullSecrets":[{"name":"dockerhub-pull-secret"}],"serviceAccountName":"ci1-b-sa-concord-agent","terminationGracePeriodSeconds":3600,"tolerations":null,"volumes":[{"configMap":{"name":"%%configMapName%%"},"name":"cfg"},{"emptyDir":{},"name":"process-tmp"}]}},"queueSelector":{"agent":{"clusterAlias":"^(ci1-b|ci1)$","flavor":"kubernetes"}},"size":0}}
+"
+    },
+    "creationTimestamp": "2025-02-04T17:24:20Z",
+    "generation": 81,
+    "labels": {
+      "k8slens-edit-resource-version": "v1alpha1"
+    },
+    "name": "agentpool-ci1-b-default",
+    "namespace": "concord",
+    "resourceVersion": "119867644",
+    "uid": "dde5e959-07fa-4a07-a30c-97c2f37fb903"
+  },
+  "spec": {
+    "autoScale": true,
+    "autoScaleStrategy": "linear",
+    "configMap": {
+      "apiVersion": "v1",
+      "data": {
+        "agent.conf": "data
+",
+        "mvn.json": "data
+",
+        "preStopHook.sh": "data
+"
+      },
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "%%configMapName%%"
+      }
+    },
+    "maxSize": 10,
+    "minSize": 2,
+    "pod": {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "annotations": {
+          "karpenter.sh/do-not-disrupt": "true"
+        },
+        "labels": {
+          "app": "%%app%%",
+          "concordCfgHash": "%%concordCfgHash%%",
+          "poolName": "%%poolName%%"
+        },
+        "name": "%%podName%%"
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "CONCORD_JAVA_OPTS",
+                "value": "-Xmx256m"
+              },
+              {
+                "name": "CONCORD_TMP_DIR",
+                "value": "/tmp/concord"
+              },
+              {
+                "name": "CONCORD_DOCKER_LOCAL_MODE",
+                "value": "false"
+              },
+              {
+                "name": "DOCKER_HOST",
+                "value": "tcp://localhost:6666"
+              },
+              {
+                "name": "CONCORD_CFG_FILE",
+                "value": "/opt/concord/conf/agent.conf"
+              },
+              {
+                "name": "CONCORD_MAVEN_CFG",
+                "value": "/opt/concord/conf/mvn.json"
+              },
+              {
+                "name": "MY_POD_NAME",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.name"
+                  }
+                }
+              },
+              {
+                "name": "MY_POD_NAMESPACE",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "metadata.namespace"
+                  }
+                }
+              },
+              {
+                "name": "MY_POD_IP",
+                "valueFrom": {
+                  "fieldRef": {
+                    "fieldPath": "status.podIP"
+                  }
+                }
+              },
+              {
+                "name": "USER_AGENT",
+                "value": "k8s-agent $(MY_POD_NAMESPACE)/$(MY_POD_NAME) @ $(MY_POD_IP)"
+              },
+              {
+                "name": "CONCORD_INSTANCE_ALIAS",
+                "value": "ci1-b"
+              },
+              {
+                "name": "CONCORD_INSTANCE_GROUP_ALIAS",
+                "value": "ci1"
+              }
+            ],
+            "image": "ghcr.io/concord-workflow/ck8s/ck8s-agent:e4265f5",
+            "imagePullPolicy": "Always",
+            "lifecycle": {
+              "preStop": {
+                "exec": {
+                  "command": [
+                    "sh",
+                    "/opt/concord/hooks/preStopHook.sh"
+                  ]
+                }
+              }
+            },
+            "name": "agent",
+            "ports": [
+              {
+                "containerPort": 8010
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": 2,
+                "memory": "4096M"
+              },
+              "requests": {
+                "cpu": 2,
+                "memory": "4096M"
+              }
+            },
+            "volumeMounts": [
+              {
+                "mountPath": "/opt/concord/conf/agent.conf",
+                "name": "cfg",
+                "subPath": "agent.conf"
+              },
+              {
+                "mountPath": "/opt/concord/conf/mvn.json",
+                "name": "cfg",
+                "subPath": "mvn.json"
+              },
+              {
+                "mountPath": "/opt/concord/hooks/preStopHook.sh",
+                "name": "cfg",
+                "subPath": "preStopHook.sh"
+              },
+              {
+                "mountPath": "/tmp",
+                "name": "process-tmp"
+              }
+            ]
+          }
+        ],
+        "imagePullSecrets": [
+          {
+            "name": "dockerhub-pull-secret"
+          }
+        ],
+        "serviceAccountName": "ci1-b-sa-concord-agent",
+        "terminationGracePeriodSeconds": 3600,
+        "volumes": [
+          {
+            "configMap": {
+              "name": "%%configMapName%%"
+            },
+            "name": "cfg"
+          },
+          {
+            "emptyDir": {},
+            "name": "process-tmp"
+          }
+        ]
+      }
+    },
+    "queueSelector": {
+      "agent": {
+        "clusterAlias": "^(ci1-b|ci1)$",
+        "flavor": "kubernetes"
+      }
+    },
+    "size": 0
+  }
+}
