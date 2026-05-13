@@ -24,6 +24,7 @@
         <build.helper.plugin.version>3.2.0</build.helper.plugin.version>
         <checker-qual.version>3.37.0</checker-qual.version>
         <ck8s.cli.version>1.7.3</ck8s.cli.version>
+        <commons.codec.version>1.19.0</commons.codec.version>
         <concord.git.plugin.version>1.48.0</concord.git.plugin.version>
         <concord.jira.plugin.version>2.7.0</concord.jira.plugin.version>
         <concord.version>2.40.0</concord.version>
@@ -234,6 +235,11 @@
                 <groupId>com.walmartlabs.concord.plugins.basic</groupId>
                 <artifactId>concord-tasks</artifactId>
                 <version>${concord.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
