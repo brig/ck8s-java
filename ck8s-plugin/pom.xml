@@ -89,7 +89,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.21.5</version>
+            <version>${protobuf.version}</version>
         </dependency>
 
         <!-- Secret -->
