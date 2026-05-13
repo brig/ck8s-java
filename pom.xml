@@ -37,11 +37,11 @@
         <docker.registry>ghcr.io</docker.registry>
         <docker.repository>concord-workflow/ck8s/${project.artifactId}</docker.repository>
         <egit.github.version>6.1.0.202203080745-r</egit.github.version>
-        <gcp.sdk.version>26.1.0</gcp.sdk.version>
+        <gcp.sdk.version>26.82.0</gcp.sdk.version>
         <glassfish.el.version>3.0.1-b12</glassfish.el.version>
-        <guava.version>32.1.3-jre</guava.version>
+        <guava.version>33.5.0-jre</guava.version>
         <imageTag></imageTag>
-        <j2objc.annotations.version>2.8</j2objc.annotations.version>
+        <j2objc.annotations.version>3.1</j2objc.annotations.version>
         <jackson.version>2.21.1</jackson.version>
         <jooq.version>3.12.3</jooq.version>
         <kubernetes.version>7.5.2</kubernetes.version>
@@ -58,7 +58,7 @@
         <okio.version>1.17.2</okio.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <protobuf.version>3.25.5</protobuf.version>
+        <protobuf.version>4.33.2</protobuf.version>
         <provisio.version>1.0.12</provisio.version>
         <reactive.streams.version>1.0.4</reactive.streams.version>
         <repositorybrowserplugin.version>1.0.1</repositorybrowserplugin.version>
@@ -165,28 +165,9 @@
                 <version>2.26.1</version>
             </dependency>
             <dependency>
-                <groupId>com.google.api.grpc</groupId>
-                <artifactId>proto-google-cloud-secretmanager-v1</artifactId>
-                <version>2.3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.auth</groupId>
-                <artifactId>google-auth-library-credentials</artifactId>
-                <version>1.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.auth</groupId>
-                <artifactId>google-auth-library-oauth2-http</artifactId>
-                <version>1.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>google-cloud-secretmanager</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.10</version>
+                <version>2.13.2</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
