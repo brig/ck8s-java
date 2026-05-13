@@ -26,7 +26,7 @@
         <ck8s.cli.version>1.7.3</ck8s.cli.version>
         <concord.git.plugin.version>1.48.0</concord.git.plugin.version>
         <concord.jira.plugin.version>2.7.0</concord.jira.plugin.version>
-        <concord.version>2.36.0</concord.version>
+        <concord.version>2.40.0</concord.version>
         <docker.file>${basedir}/Dockerfile</docker.file>
         <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
         <docker.path>${docker.registry}/${docker.repository}</docker.path>
