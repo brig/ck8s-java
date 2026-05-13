@@ -79,7 +79,7 @@
 
                                 <param>mvn://ca.ibodrov.mica:mica-concord-task:${mica.version}</param>
 
-                                <param>mvn://org.codehaus.groovy:groovy-all:pom:3.0.22</param>
+                                <param>mvn://org.codehaus.groovy:groovy-all:pom:3.0.25</param>
                                 <param>mvn://org.postgresql:postgresql:42.7.4</param>
 
                                 <param>mvn://com.walmartlabs.concord.plugins:aws-tasks:${concord.plugins.version}</param>
