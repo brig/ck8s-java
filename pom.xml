@@ -39,6 +39,7 @@
         <docker.registry>ghcr.io</docker.registry>
         <docker.repository>concord-workflow/ck8s/${project.artifactId}</docker.repository>
         <egit.github.version>6.1.0.202203080745-r</egit.github.version>
+        <errorprone.annotations.version>2.28.0</errorprone.annotations.version>
         <gcp.sdk.version>26.82.0</gcp.sdk.version>
         <glassfish.el.version>3.0.1-b12</glassfish.el.version>
         <guava.version>33.5.0-jre</guava.version>
