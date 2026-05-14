@@ -27,6 +27,7 @@
         <commons.codec.version>1.19.0</commons.codec.version>
         <concord.git.plugin.version>1.48.0</concord.git.plugin.version>
         <concord.jira.plugin.version>2.7.0</concord.jira.plugin.version>
+        <concord.maven.plugin.version>0.0.38</concord.maven.plugin.version>
         <concord.version>2.40.0</concord.version>
         <docker.file>${basedir}/Dockerfile</docker.file>
         <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
@@ -720,6 +721,14 @@
                     <groupId>org.liquibase</groupId>
                     <artifactId>liquibase-maven-plugin</artifactId>
                     <version>${liquibase.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>dev.ybrig.concord</groupId>
+                    <artifactId>concord-maven-plugin</artifactId>
+                    <version>${concord.maven.plugin.version}</version>
+                    <configuration>
+                        <concordVersion>${concord.version}</concordVersion>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.skife.maven</groupId>
