@@ -1,8 +1,10 @@
 package ca.vanzyl.ck8s.utils;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.walmartlabs.concord.runtime.v2.sdk.DryRunReady;
 import com.walmartlabs.concord.runtime.v2.sdk.FileService;
@@ -11,13 +13,11 @@ import com.walmartlabs.concord.runtime.v2.sdk.WorkingDirectory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Named("ck8sResource")
@@ -51,6 +51,19 @@ public class Ck8sResourceTask implements Task {
         }
 
         return workDir.relativize(dst.toAbsolutePath()).toString();
+    }
+
+    public Object asJson(String path) throws IOException {
+        try (InputStream in = Files.newInputStream(Paths.get( path))) {
+            return createObjectMapper().readValue(in, Object.class);
+        }
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new Jdk8Module());
+        om.registerModule(new JavaTimeModule());
+        return om;
     }
 
     private static ObjectMapper createYamlObjectMapper() {
