@@ -85,6 +85,7 @@
                                 <param>mvn://com.walmartlabs.concord.plugins:aws-tasks:${concord.plugins.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins:git:${concord.plugins.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins:jira-task:${concord.plugins.version}</param>
+                                <param>mvn://com.walmartlabs.concord.plugins:terraform-task:${concord.plugins.version}</param>
 
                                 <param>mvn://dev.ybrig.concord.plugins:opentelemetry:${opentelemetry.plugin.version}</param>
 
