@@ -45,9 +45,9 @@
         <guava.version>33.5.0-jre</guava.version>
         <imageTag></imageTag>
         <j2objc.annotations.version>3.1</j2objc.annotations.version>
-        <jackson.version>2.21.1</jackson.version>
+        <jackson.version>2.21.3</jackson.version>
         <jooq.version>3.12.3</jooq.version>
-        <kubernetes.version>7.5.2</kubernetes.version>
+        <kubernetes.version>7.7.0</kubernetes.version>
         <liquibase.version>3.5.1</liquibase.version>
         <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
 
@@ -65,7 +65,7 @@
         <provisio.version>1.0.12</provisio.version>
         <reactive.streams.version>1.0.4</reactive.streams.version>
         <repositorybrowserplugin.version>1.0.1</repositorybrowserplugin.version>
-        <snakeyaml.engine.version>2.10</snakeyaml.engine.version>
+        <snakeyaml.engine.version>3.0.1</snakeyaml.engine.version>
         <snakeyaml.version>2.5</snakeyaml.version>
         <testcontainers.version>1.19.1</testcontainers.version>
         <!-- testing-concord-server version must be a release version of Concord -->

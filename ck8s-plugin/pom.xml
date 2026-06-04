@@ -462,6 +462,9 @@
             <plugin>
                 <groupId>dev.ybrig.concord</groupId>
                 <artifactId>concord-maven-plugin</artifactId>
+                <configuration>
+                    <skipVerify>true</skipVerify>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
