@@ -1,5 +1,6 @@
 package ca.vanzyl.ck8s.utils;
 
+import com.walmartlabs.concord.runtime.v2.sdk.DryRunReady;
 import com.walmartlabs.concord.runtime.v2.sdk.Task;
 
 import javax.inject.Named;
@@ -7,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Named("ck8sDatetime")
+@DryRunReady
 public class Ck8sDateTimeTask implements Task {
 
     public ZonedDateTime parseIsoDateTime(String input) {
