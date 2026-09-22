@@ -60,6 +60,9 @@
         <netty.version>4.1.133.Final</netty.version>
         <okhttp3.version>3.12.12</okhttp3.version>
         <okio.version>1.17.2</okio.version>
+        <!-- only feeds the agent's flow-runtime repository, which the BOM cannot reach;
+             keep in sync with org.postgresql:postgresql from concord-targetplatform -->
+        <postgres.version>42.7.12</postgres.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <protobuf.version>4.33.2</protobuf.version>
