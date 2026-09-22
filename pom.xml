@@ -28,7 +28,7 @@
         <concord.git.plugin.version>1.48.0</concord.git.plugin.version>
         <concord.jira.plugin.version>2.7.0</concord.jira.plugin.version>
         <concord.maven.plugin.version>0.0.38</concord.maven.plugin.version>
-        <concord.version>2.41.0</concord.version>
+        <concord.version>2.46.1-SNAPSHOT</concord.version>
         <docker.file>${basedir}/Dockerfile</docker.file>
         <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
         <docker.path>${docker.registry}/${docker.repository}</docker.path>
@@ -40,18 +40,19 @@
         <docker.repository>concord-workflow/ck8s/${project.artifactId}</docker.repository>
         <egit.github.version>6.1.0.202203080745-r</egit.github.version>
         <errorprone.annotations.version>2.28.0</errorprone.annotations.version>
-        <gcp.sdk.version>26.82.0</gcp.sdk.version>
         <glassfish.el.version>3.0.1-b12</glassfish.el.version>
         <guava.version>33.5.0-jre</guava.version>
         <imageTag></imageTag>
         <j2objc.annotations.version>3.1</j2objc.annotations.version>
-        <jackson.version>2.21.3</jackson.version>
-        <jooq.version>3.12.3</jooq.version>
+        <jackson.version>2.22.2</jackson.version>
+        <!-- versions the codegen plugin; must match org.jooq:jooq coming from
+             concord-targetplatform, otherwise generated code and runtime drift apart -->
+        <jooq.version>3.21.8</jooq.version>
         <kubernetes.version>7.7.0</kubernetes.version>
         <liquibase.version>3.5.1</liquibase.version>
         <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
 
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
         <mockito.version>3.2.4</mockito.version>
@@ -79,13 +80,6 @@
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>${jackson.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>libraries-bom</artifactId>
-                <version>${gcp.sdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -456,7 +450,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.0</version>
                     <configuration>
                         <skipSource>true</skipSource>
                     </configuration>
@@ -472,7 +466,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.8</version>
                     <configuration>
                         <skip>true</skip>
                     </configuration>
@@ -541,7 +535,8 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <!-- 3.3.0 bundles ASM 9.2, which cannot read Java 21 class files -->
+                    <version>3.11.0</version>
                     <executions>
                         <execution>
                             <id>default</id>
@@ -560,7 +555,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.6.3</version>
                     <configuration>
                         <fail>true</fail>
                         <failFast>false</failFast>
@@ -580,7 +575,7 @@
                                 <version>${maven.compiler.release}</version>
                             </requireJavaVersion>
                             <enforceBytecodeVersion>
-                                <maxJdkVersion>17</maxJdkVersion>
+                                <maxJdkVersion>21</maxJdkVersion>
                                 <ignoredScopes>test</ignoredScopes>
                                 <excludes>
                                     <exclude>org.eclipse.jetty:jetty-alpn-java-client</exclude>
@@ -655,7 +650,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.6.4</version>
                     <executions>
                         <execution>
                             <id>docker-create-context</id>
