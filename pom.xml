@@ -18,7 +18,9 @@
     <properties>
 
         <assertj.version>3.27.7</assertj.version>
-        <aws.sdkv2.version>2.44.3</aws.sdkv2.version>
+        <!-- keep in sync with aws.sdk.version in concord-plugins, so the agent image
+             does not end up carrying two AWS SDK copies; also the source of netty -->
+        <aws.sdkv2.version>2.55.2</aws.sdkv2.version>
         <!-- Maven plugin versions -->
         <baseImageVersion>latest</baseImageVersion>
         <build.helper.plugin.version>3.2.0</build.helper.plugin.version>
@@ -57,7 +59,6 @@
         <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
         <mockito.version>3.2.4</mockito.version>
         <mysql.connector.version>8.2.0</mysql.connector.version>
-        <netty.version>4.1.137.Final</netty.version>
         <okhttp3.version>3.12.12</okhttp3.version>
         <okio.version>1.17.2</okio.version>
         <!-- only feeds the agent's flow-runtime repository, which the BOM cannot reach;
@@ -97,13 +98,6 @@
                 <groupId>io.fabric8</groupId>
                 <artifactId>kubernetes-client-bom</artifactId>
                 <version>${kubernetes.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
