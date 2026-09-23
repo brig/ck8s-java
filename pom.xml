@@ -19,7 +19,7 @@
 
         <assertj.version>3.27.7</assertj.version>
         <!-- keep in sync with aws.sdk.version in concord-plugins, so the agent image
-             does not end up carrying two AWS SDK copies; also the source of netty -->
+             does not end up carrying two AWS SDK copies -->
         <aws.sdkv2.version>2.55.2</aws.sdkv2.version>
         <!-- Maven plugin versions -->
         <baseImageVersion>latest</baseImageVersion>
@@ -59,6 +59,7 @@
         <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
         <mockito.version>3.2.4</mockito.version>
         <mysql.connector.version>8.2.0</mysql.connector.version>
+        <netty.version>4.1.138.Final</netty.version>
         <okhttp3.version>3.12.12</okhttp3.version>
         <okio.version>1.17.2</okio.version>
         <!-- only feeds the agent's flow-runtime repository, which the BOM cannot reach;
@@ -98,6 +99,17 @@
                 <groupId>io.fabric8</groupId>
                 <artifactId>kubernetes-client-bom</artifactId>
                 <version>${kubernetes.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- netty reaches us from two directions: the AWS SDK (netty-nio-client) and
+                 fabric8's vertx http client. The AWS BOM only covers the former, so the
+                 vertx-only modules (resolver-dns, codec-dns, codec-socks, handler-proxy)
+                 need this. Keep the version equal to netty.version of aws.sdkv2.version. -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
