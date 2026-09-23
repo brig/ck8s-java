@@ -50,7 +50,9 @@
         <!-- versions the codegen plugin; must match org.jooq:jooq coming from
              concord-targetplatform, otherwise generated code and runtime drift apart -->
         <jooq.version>3.21.8</jooq.version>
-        <kubernetes.version>7.7.0</kubernetes.version>
+        <!-- 7.9.0+ ships vertx 4.5.31, which pulls netty 4.1.136; older vertx pinned
+             netty-resolver-dns to a vulnerable 4.1.133 inside the agent plugins cache -->
+        <kubernetes.version>7.9.0</kubernetes.version>
         <liquibase.version>3.5.1</liquibase.version>
         <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
 
