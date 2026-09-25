@@ -40,6 +40,13 @@ public class CredentialsProvider implements ExecutionListener {
      */
     public static final String ASSUME_ROLE_VARIABLE = "__ck8s_aws_assumed_role_info";
 
+    /**
+     * Key under {@code clusterRequest.aws} holding the process-wide default role, the one
+     * awsPrereqs assumes at the start. Not a frame variable: it has to outlive the flow
+     * that picks it. No {@code __} prefix - this is config, not a flow variable.
+     */
+    public static final String DEFAULT_ROLE_KEY = "assumedRoleInfo";
+
     private final Object lock = new Object();
 
     /**
@@ -171,9 +178,12 @@ public class CredentialsProvider implements ExecutionListener {
     }
 
     /**
-     * The role assumed for the current frame, or {@code null} if the calling flow did not
-     * establish one. Frame locals are visible to nested calls and are copied into parallel
-     * branches, so each branch resolves its own role.
+     * The role to use for the calling frame.
+     * <p/>
+     * A frame variable wins: frame locals are visible to nested calls and are copied into
+     * parallel branches, so a flow wrapped in a role - and every branch it forks - resolves
+     * its own. Without one, the process-wide default picked in awsPrereqs applies; that one
+     * is not a scope, so it lives in clusterRequest rather than in a frame.
      */
     // package-private for tests
     static StsAssumeRole scopedAssumeRole(Context context) {
@@ -181,7 +191,28 @@ public class CredentialsProvider implements ExecutionListener {
             return null;
         }
 
-        Object v = context.variables().get(ASSUME_ROLE_VARIABLE);
+        StsAssumeRole scoped = asAssumeRole(context.variables().get(ASSUME_ROLE_VARIABLE), ASSUME_ROLE_VARIABLE);
+        if (scoped != null) {
+            return scoped;
+        }
+
+        return processDefaultRole(context);
+    }
+
+    private static StsAssumeRole processDefaultRole(Context context) {
+        Object clusterRequest = context.variables().get("clusterRequest");
+        if (!(clusterRequest instanceof Map<?, ?> cr)) {
+            return null;
+        }
+
+        if (!(cr.get("aws") instanceof Map<?, ?> aws)) {
+            return null;
+        }
+
+        return asAssumeRole(aws.get(DEFAULT_ROLE_KEY), "clusterRequest.aws." + DEFAULT_ROLE_KEY);
+    }
+
+    private static StsAssumeRole asAssumeRole(Object v, String where) {
         if (v == null) {
             return null;
         }
@@ -190,7 +221,7 @@ public class CredentialsProvider implements ExecutionListener {
             return role;
         }
 
-        throw new IllegalStateException("Invalid '" + ASSUME_ROLE_VARIABLE + "' value, expected: "
+        throw new IllegalStateException("Invalid '" + where + "' value, expected: "
                 + StsAssumeRole.class.getName() + ", got: " + v.getClass().getName());
     }
 

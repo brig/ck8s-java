@@ -55,6 +55,33 @@ public class CredentialsProviderTest {
         assertEquals(APP, CredentialsProvider.scopedAssumeRole(branchB));
     }
 
+    /**
+     * awsPrereqs assumes a role for the whole process. It is not a scope, so it lives in
+     * clusterRequest instead of a frame.
+     */
+    @Test
+    public void theProcessDefaultAppliesWhenTheFrameNamesNoRole() {
+        var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
+
+        assertEquals(APP, CredentialsProvider.scopedAssumeRole(ctx));
+    }
+
+    @Test
+    public void aScopedRoleWinsOverTheProcessDefault() {
+        var ctx = new MockTestContext(Map.of(
+                ASSUME_ROLE_VARIABLE, ADMIN,
+                "clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
+
+        assertEquals(ADMIN, CredentialsProvider.scopedAssumeRole(ctx));
+    }
+
+    @Test
+    public void aClusterRequestWithoutARoleIsNotAnError() {
+        var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("homeRegion", "us-east-1"))));
+
+        assertNull(CredentialsProvider.scopedAssumeRole(ctx));
+    }
+
     @Test
     public void aWrongTypeIsReportedWithTheVariableName() {
         var ctx = new MockTestContext(Map.of(ASSUME_ROLE_VARIABLE, "arn:aws:iam::1:role/admin"));
