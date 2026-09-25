@@ -28,7 +28,7 @@ public class CredentialsProviderTest {
             StsAssumeRole.from("default", Region.US_EAST_1, "arn:aws:iam::1:role/app", "concord-agent-app");
 
     private static CredentialsProvider provider() {
-        return new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
+        return new CredentialsProvider();
     }
 
     @Test

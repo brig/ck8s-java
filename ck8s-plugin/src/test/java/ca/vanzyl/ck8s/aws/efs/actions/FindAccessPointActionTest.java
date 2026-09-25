@@ -22,7 +22,7 @@ public class FindAccessPointActionTest {
 
     @Test
     public void test() throws Exception {
-        var credentialsProvider = new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
+        var credentialsProvider = new CredentialsProvider();
         var factory = new EfsClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()), () -> new MockTestContext(Map.of()));
         var action = new FindAccessPointAction(factory);
 

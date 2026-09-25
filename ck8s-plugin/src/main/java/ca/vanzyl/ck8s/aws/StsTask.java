@@ -33,16 +33,8 @@ public class StsTask implements Task {
         var action = input.assertString("action");
         if ("assume-role".equals(action)) {
             return assumeRole(input);
-        } else if ("cleanup".equals(action)) {
-            return cleanup(input);
         }
         throw new IllegalArgumentException("Unsupported action: " + action);
-    }
-
-    private TaskResult cleanup(Variables input) {
-        log.info("Cleanup assume role info");
-        credentialsProvider.setCredentials(null, null);
-        return TaskResult.success();
     }
 
     private TaskResult assumeRole(Variables input) {
@@ -69,9 +61,6 @@ public class StsTask implements Task {
                     response.credentials().expiration());
 
             var assumeRole = StsAssumeRole.from(getProfile(input), assertRegion(input), roleArn, roleSessionName);
-
-            // still published process-wide so that flows which have not been migrated keep working
-            credentialsProvider.setCredentials(SessionCredentials.from(response.credentials()), assumeRole);
 
             // the caller is expected to bind this to CredentialsProvider.ASSUME_ROLE_VARIABLE in the
             // frame that should run under the role. The task cannot do it itself: a flow call creates

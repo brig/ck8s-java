@@ -25,7 +25,7 @@ public class GetTemplateActionTest {
 
     @Test
     public void test() throws Exception {
-        var credentialsProvider = new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
+        var credentialsProvider = new CredentialsProvider();
         var factory = new CloudFormationClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()), () -> new MockTestContext(Map.of()));
         var action = new GetTemplateAction(factory);
 
