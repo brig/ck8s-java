@@ -60,6 +60,7 @@ public class PythonTask
     private final Path workDir;
     private final FileService fileService;
     private final CredentialsProvider credentialsProvider;
+    private final Context ctx;
 
     @Inject
     public PythonTask(Context ctx, CredentialsProvider credentialsProvider)
@@ -67,13 +68,14 @@ public class PythonTask
         this.workDir = ctx.workingDirectory();
         this.fileService = ctx.fileService();
         this.credentialsProvider = credentialsProvider;
+        this.ctx = ctx;
     }
 
     @Override
     public TaskResult.SimpleResult execute(Variables input)
             throws Exception {
         PythonTaskParams params = new PythonTaskParams(input);
-        var envParams = CommandTask.enrichEnvWithAwsCredentials(credentialsProvider, params.envars());
+        var envParams = CommandTask.enrichEnvWithAwsCredentials(credentialsProvider, ctx, params.envars());
 
         Path script = createScript(params);
 

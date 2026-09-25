@@ -9,6 +9,7 @@ import com.google.common.cache.LoadingCache;
 import com.walmartlabs.concord.runtime.v2.sdk.Context;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -17,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 public class SecretsRetrieverProvider {
 
     private final CredentialsProvider credentialsProvider;
+    private final Provider<Context> contextProvider;
 
     private final LoadingCache<Key, SecretsRetriever> cache = CacheBuilder.newBuilder()
             .build(new CacheLoader<>() {
@@ -27,8 +29,9 @@ public class SecretsRetrieverProvider {
             });
 
     @Inject
-    public SecretsRetrieverProvider(CredentialsProvider credentialsProvider) {
+    public SecretsRetrieverProvider(CredentialsProvider credentialsProvider, Provider<Context> contextProvider) {
         this.credentialsProvider = credentialsProvider;
+        this.contextProvider = contextProvider;
     }
 
     public SecretsRetriever create(Context context, String secretsDocument) {
@@ -51,7 +54,7 @@ public class SecretsRetrieverProvider {
 
     private SecretsRetriever create(Key key) {
         if ("aws".equals(key.provider)) {
-            return new AsmSecretsRetriever(key.region, key.profile, key.secretsDocument, true, true, credentialsProvider);
+            return new AsmSecretsRetriever(key.region, key.profile, key.secretsDocument, true, true, credentialsProvider, contextProvider);
         } else if ("local".equals(key.provider)) {
             return new LocalSecretsRetriever(key.secretsDocument, true);
         } else if ("fake".equals(key.provider)) {

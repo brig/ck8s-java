@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.walmartlabs.concord.runtime.v2.sdk.MapBackedVariables;
 import com.walmartlabs.concord.runtime.v2.sdk.TaskResult;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import com.walmartlabs.concord.runtime.v2.sdk.Variables;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -26,7 +27,7 @@ public class EcrTaskITest {
     @Before
     public void setup() {
         credentialsProvider = mock(CredentialsProvider.class);
-        when(credentialsProvider.get(any(Variables.class))).thenReturn(DefaultCredentialsProvider.builder()
+        when(credentialsProvider.get(any(Context.class), any(Variables.class))).thenReturn(DefaultCredentialsProvider.builder()
                 .profileName("dev")
                 .build());
     }

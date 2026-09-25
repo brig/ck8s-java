@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import software.amazon.awssdk.regions.Region;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
@@ -21,8 +22,8 @@ public class FindFileSystemActionTest {
 
     @Test
     public void test() throws Exception {
-        var credentialsProvider = new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
-        var factory = new EfsClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()));
+        var credentialsProvider = new CredentialsProvider();
+        var factory = new EfsClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()), () -> new MockTestContext(Map.of()));
         var action = new FindFileSystemAction(factory);
 
         var params = new EfsTaskParams.FindFileSystemParams(
