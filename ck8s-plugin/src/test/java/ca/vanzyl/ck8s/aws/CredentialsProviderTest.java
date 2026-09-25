@@ -61,7 +61,7 @@ public class CredentialsProviderTest {
      */
     @Test
     public void theProcessDefaultAppliesWhenTheFrameNamesNoRole() {
-        var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
+        var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("initialAssumedRoleInfo", APP))));
 
         assertEquals(APP, CredentialsProvider.currentRole(ctx));
     }
@@ -70,7 +70,7 @@ public class CredentialsProviderTest {
     public void aScopedRoleWinsOverTheProcessDefault() {
         var ctx = new MockTestContext(Map.of(
                 ASSUME_ROLE_VARIABLE, ADMIN,
-                "clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
+                "clusterRequest", Map.of("aws", Map.of("initialAssumedRoleInfo", APP))));
 
         assertEquals(ADMIN, CredentialsProvider.currentRole(ctx));
     }

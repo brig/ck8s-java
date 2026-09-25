@@ -41,11 +41,15 @@ public class CredentialsProvider implements ExecutionListener {
     public static final String ASSUME_ROLE_VARIABLE = "__ck8s_aws_assumed_role_info";
 
     /**
-     * Key under {@code clusterRequest.aws} holding the process-wide default role, the one
-     * awsPrereqs assumes at the start. Not a frame variable: it has to outlive the flow
-     * that picks it. No {@code __} prefix - this is config, not a flow variable.
+     * Key under {@code clusterRequest.aws} holding the role the process started with, the
+     * one awsPrereqs assumes before any work begins.
+     * <p/>
+     * Deliberately not a frame variable, and named for when it is set rather than for what
+     * it is: it has to outlive awsPrereqs, and it is the fallback, never the answer while a
+     * scope is active. Callers should not read it - ask {@link #currentRole(Context)}.
+     * No {@code __} prefix, this is config rather than a flow variable.
      */
-    public static final String DEFAULT_ROLE_KEY = "assumedRoleInfo";
+    public static final String INITIAL_ROLE_KEY = "initialAssumedRoleInfo";
 
     private final Object lock = new Object();
 
@@ -211,7 +215,7 @@ public class CredentialsProvider implements ExecutionListener {
             return null;
         }
 
-        return asAssumeRole(aws.get(DEFAULT_ROLE_KEY), "clusterRequest.aws." + DEFAULT_ROLE_KEY);
+        return asAssumeRole(aws.get(INITIAL_ROLE_KEY), "clusterRequest.aws." + INITIAL_ROLE_KEY);
     }
 
     private static StsAssumeRole asAssumeRole(Object v, String where) {
