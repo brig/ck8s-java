@@ -12,11 +12,10 @@
     <name>CK8s :: Agent Image</name>
 
     <properties>
-        <concord.plugins.version>2.12.0</concord.plugins.version>
+        <concord.plugins.version>2.14.1-SNAPSHOT</concord.plugins.version>
 
         <mica.version>0.0.34</mica.version>
 
-        <opentelemetry.plugin.version>0.1.15</opentelemetry.plugin.version>
         <skip.plugins.cache>true</skip.plugins.cache>
     </properties>
 
@@ -80,14 +79,12 @@
                                 <param>mvn://ca.ibodrov.mica:mica-concord-task:${mica.version}</param>
 
                                 <param>mvn://org.codehaus.groovy:groovy-all:pom:3.0.25</param>
-                                <param>mvn://org.postgresql:postgresql:42.7.11</param>
+                                <param>mvn://org.postgresql:postgresql:${postgres.version}</param>
 
                                 <param>mvn://com.walmartlabs.concord.plugins:aws-tasks:${concord.plugins.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins:git:${concord.plugins.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins:jira-task:${concord.plugins.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins:terraform-task:${concord.plugins.version}</param>
-
-                                <param>mvn://dev.ybrig.concord.plugins:opentelemetry:${opentelemetry.plugin.version}</param>
 
                                 <param>mvn://com.walmartlabs.concord.plugins.basic:http-tasks:${concord.version}</param>
                                 <param>mvn://com.walmartlabs.concord.plugins.basic:slack-tasks:${concord.version}</param>

@@ -18,7 +18,9 @@
     <properties>
 
         <assertj.version>3.27.7</assertj.version>
-        <aws.sdkv2.version>2.44.3</aws.sdkv2.version>
+        <!-- keep in sync with aws.sdk.version in concord-plugins, so the agent image
+             does not end up carrying two AWS SDK copies -->
+        <aws.sdkv2.version>2.55.2</aws.sdkv2.version>
         <!-- Maven plugin versions -->
         <baseImageVersion>latest</baseImageVersion>
         <build.helper.plugin.version>3.2.0</build.helper.plugin.version>
@@ -28,7 +30,7 @@
         <concord.git.plugin.version>1.48.0</concord.git.plugin.version>
         <concord.jira.plugin.version>2.7.0</concord.jira.plugin.version>
         <concord.maven.plugin.version>0.0.38</concord.maven.plugin.version>
-        <concord.version>2.41.0</concord.version>
+        <concord.version>2.46.1-SNAPSHOT</concord.version>
         <docker.file>${basedir}/Dockerfile</docker.file>
         <docker.maven.plugin.version>0.48.1</docker.maven.plugin.version>
         <docker.path>${docker.registry}/${docker.repository}</docker.path>
@@ -40,25 +42,31 @@
         <docker.repository>concord-workflow/ck8s/${project.artifactId}</docker.repository>
         <egit.github.version>6.1.0.202203080745-r</egit.github.version>
         <errorprone.annotations.version>2.28.0</errorprone.annotations.version>
-        <gcp.sdk.version>26.82.0</gcp.sdk.version>
         <glassfish.el.version>3.0.1-b12</glassfish.el.version>
         <guava.version>33.5.0-jre</guava.version>
         <imageTag></imageTag>
         <j2objc.annotations.version>3.1</j2objc.annotations.version>
-        <jackson.version>2.21.3</jackson.version>
-        <jooq.version>3.12.3</jooq.version>
-        <kubernetes.version>7.7.0</kubernetes.version>
+        <jackson.version>2.22.2</jackson.version>
+        <!-- versions the codegen plugin; must match org.jooq:jooq coming from
+             concord-targetplatform, otherwise generated code and runtime drift apart -->
+        <jooq.version>3.21.8</jooq.version>
+        <!-- 7.9.0+ ships vertx 4.5.31, which pulls netty 4.1.136; older vertx pinned
+             netty-resolver-dns to a vulnerable 4.1.133 inside the agent plugins cache -->
+        <kubernetes.version>7.9.0</kubernetes.version>
         <liquibase.version>3.5.1</liquibase.version>
         <maven-shade-plugin.version>3.2.3</maven-shade-plugin.version>
 
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
         <mockito.version>3.2.4</mockito.version>
         <mysql.connector.version>8.2.0</mysql.connector.version>
-        <netty.version>4.1.133.Final</netty.version>
+        <netty.version>4.1.138.Final</netty.version>
         <okhttp3.version>3.12.12</okhttp3.version>
         <okio.version>1.17.2</okio.version>
+        <!-- only feeds the agent's flow-runtime repository, which the BOM cannot reach;
+             keep in sync with org.postgresql:postgresql from concord-targetplatform -->
+        <postgres.version>42.7.12</postgres.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <protobuf.version>4.33.2</protobuf.version>
@@ -83,13 +91,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.cloud</groupId>
-                <artifactId>libraries-bom</artifactId>
-                <version>${gcp.sdk.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>com.walmartlabs.concord</groupId>
                 <artifactId>concord-targetplatform</artifactId>
                 <version>${concord.version}</version>
@@ -103,6 +104,10 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- netty reaches us from two directions: the AWS SDK (netty-nio-client) and
+                 fabric8's vertx http client. The AWS BOM only covers the former, so the
+                 vertx-only modules (resolver-dns, codec-dns, codec-socks, handler-proxy)
+                 need this. Keep the version equal to netty.version of aws.sdkv2.version. -->
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
@@ -456,7 +461,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.0</version>
                     <configuration>
                         <skipSource>true</skipSource>
                     </configuration>
@@ -472,7 +477,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.8</version>
                     <configuration>
                         <skip>true</skip>
                     </configuration>
@@ -541,7 +546,8 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <!-- 3.3.0 bundles ASM 9.2, which cannot read Java 21 class files -->
+                    <version>3.11.0</version>
                     <executions>
                         <execution>
                             <id>default</id>
@@ -560,7 +566,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.6.3</version>
                     <configuration>
                         <fail>true</fail>
                         <failFast>false</failFast>
@@ -580,7 +586,7 @@
                                 <version>${maven.compiler.release}</version>
                             </requireJavaVersion>
                             <enforceBytecodeVersion>
-                                <maxJdkVersion>17</maxJdkVersion>
+                                <maxJdkVersion>21</maxJdkVersion>
                                 <ignoredScopes>test</ignoredScopes>
                                 <excludes>
                                     <exclude>org.eclipse.jetty:jetty-alpn-java-client</exclude>
@@ -655,7 +661,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.6.4</version>
                     <executions>
                         <execution>
                             <id>docker-create-context</id>
