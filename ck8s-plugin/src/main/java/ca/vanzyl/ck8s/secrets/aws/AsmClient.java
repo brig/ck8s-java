@@ -1,6 +1,7 @@
 package ca.vanzyl.ck8s.secrets.aws;
 
 import ca.vanzyl.ck8s.aws.CredentialsProvider;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import com.walmartlabs.concord.runtime.v2.sdk.UserDefinedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,10 @@ public class AsmClient
 
     private final SecretsManagerClient client;
 
-    public AsmClient(CredentialsProvider credentialsProvider, String region, String profile)
+    public AsmClient(CredentialsProvider credentialsProvider, Context context, String region, String profile)
     {
         client = SecretsManagerClient.builder()
-                .credentialsProvider(credentialsProvider.get(profile))
+                .credentialsProvider(credentialsProvider.get(context, profile))
                 .region(Region.of(region))
                 .build();
     }

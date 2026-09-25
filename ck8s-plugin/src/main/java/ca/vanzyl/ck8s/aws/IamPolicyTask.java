@@ -63,7 +63,7 @@ public class IamPolicyTask implements Task {
 
         try (var client = IamClient.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build();
              var lock = lockPolicyIfNeed(policyName, input)) {
 
@@ -121,7 +121,7 @@ public class IamPolicyTask implements Task {
 
         try (var client = IamClient.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build();
 
              var lock = lockService.lock(policyName)) {

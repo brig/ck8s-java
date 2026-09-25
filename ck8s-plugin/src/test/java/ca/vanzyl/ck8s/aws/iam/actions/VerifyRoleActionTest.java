@@ -42,7 +42,7 @@ public class VerifyRoleActionTest {
     public void test() throws Exception {
         var context = new MockTestContext();
         var credentialsProvider = new CredentialsProvider(new ObjectMapper(), mock(PersistenceService.class), new InstanceId(UUID.randomUUID()));
-        var factory = new IamClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()));
+        var factory = new IamClientFactory(credentialsProvider, new InstanceId(UUID.randomUUID()), () -> new MockTestContext(Map.of()));
         var action = new VerifyRoleAction(factory);
 
         new StsTask(credentialsProvider, context).execute(new MapBackedVariables(Map.of(

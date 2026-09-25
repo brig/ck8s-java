@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static ca.vanzyl.ck8s.aws.AwsTaskUtils.getProfile;
@@ -30,7 +32,21 @@ public class CredentialsProvider implements ExecutionListener {
 
     private static final String ASSUME_ROLE_FILENAME = "assume-role-%s.json";
 
+    /**
+     * Flow variable holding the {@link StsAssumeRole} for the current frame.
+     * <p/>
+     * Double-underscore prefixed to keep it out of the way of user variables, following
+     * the convention the runtime itself uses ({@code __retry_cfg}, {@code __frame_input_overrides}).
+     */
+    public static final String ASSUME_ROLE_VARIABLE = "__ck8s_aws_assumed_role_info";
+
     private final Object lock = new Object();
+
+    /**
+     * Sessions issued per role. Purely a cache: the role itself is scoped to the frame,
+     * and {@link StsAssumeRole} is an immutable record, so it is safe as a key.
+     */
+    private final Map<StsAssumeRole, SessionCredentials> sessionCache = new HashMap<>();
 
     private final ObjectMapper objectMapper;
     private final PersistenceService persistenceService;
@@ -77,17 +93,42 @@ public class CredentialsProvider implements ExecutionListener {
     }
 
     public AwsCredentialsProvider get(Context context) {
-        return get(AwsTaskUtils.getProfile(context));
+        return get(context, AwsTaskUtils.getProfile(context));
     }
 
     public AwsCredentialsProvider get(Context context, Variables input) {
-        return get(AwsTaskUtils.getProfile(context, input));
+        return get(context, AwsTaskUtils.getProfile(context, input));
     }
 
+    /**
+     * Resolves the role from the calling frame, falling back to the process-wide
+     * state for flows that have not been migrated yet.
+     * <p/>
+     * The role is looked up eagerly: the returned provider may be invoked by the AWS
+     * SDK later (retries, async clients) on a thread that has no {@link Context}.
+     */
+    public AwsCredentialsProvider get(Context context, String profile) {
+        StsAssumeRole scoped = scopedAssumeRole(context);
+        if (scoped == null) {
+            return get(profile);
+        }
+
+        return () -> toAwsCredentials(sessionFor(scoped));
+    }
+
+    /**
+     * @deprecated relies on process-wide state, which is shared by parallel branches.
+     * Use {@link #get(Context, String)}.
+     */
+    @Deprecated
     public AwsCredentialsProvider get(Variables input) {
         return get(getProfile(input));
     }
 
+    /**
+     * @deprecated see {@link #get(Variables)}.
+     */
+    @Deprecated
     public AwsCredentialsProvider get(String profile) {
         synchronized (lock) {
             if (assumeRole == null) {
@@ -104,6 +145,19 @@ public class CredentialsProvider implements ExecutionListener {
         }
     }
 
+    public AwsSessionCredentials getSessionCredentials(Context context) {
+        StsAssumeRole scoped = scopedAssumeRole(context);
+        if (scoped == null) {
+            return getSessionCredentials();
+        }
+
+        return toAwsCredentials(sessionFor(scoped));
+    }
+
+    /**
+     * @deprecated see {@link #get(Variables)}.
+     */
+    @Deprecated
     public AwsSessionCredentials getSessionCredentials() {
         synchronized (lock) {
             if (assumeRole == null) {
@@ -112,12 +166,51 @@ public class CredentialsProvider implements ExecutionListener {
 
             refreshSessionIfNeeded();
 
-            return AwsSessionCredentials.create(
-                    sessionCredentials.accessKeyId(),
-                    sessionCredentials.secretAccessKey(),
-                    sessionCredentials.sessionToken()
-            );
+            return toAwsCredentials(sessionCredentials);
         }
+    }
+
+    /**
+     * The role assumed for the current frame, or {@code null} if the calling flow did not
+     * establish one. Frame locals are visible to nested calls and are copied into parallel
+     * branches, so each branch resolves its own role.
+     */
+    // package-private for tests
+    static StsAssumeRole scopedAssumeRole(Context context) {
+        if (context == null) {
+            return null;
+        }
+
+        Object v = context.variables().get(ASSUME_ROLE_VARIABLE);
+        if (v == null) {
+            return null;
+        }
+
+        if (v instanceof StsAssumeRole role) {
+            return role;
+        }
+
+        throw new IllegalStateException("Invalid '" + ASSUME_ROLE_VARIABLE + "' value, expected: "
+                + StsAssumeRole.class.getName() + ", got: " + v.getClass().getName());
+    }
+
+    private SessionCredentials sessionFor(StsAssumeRole role) {
+        synchronized (lock) {
+            SessionCredentials cached = sessionCache.get(role);
+            if (cached == null || isExpiring(cached)) {
+                cached = refreshCredentials(role);
+                sessionCache.put(role, cached);
+            }
+            return cached;
+        }
+    }
+
+    private static AwsSessionCredentials toAwsCredentials(SessionCredentials c) {
+        return AwsSessionCredentials.create(c.accessKeyId(), c.secretAccessKey(), c.sessionToken());
+    }
+
+    private static boolean isExpiring(SessionCredentials c) {
+        return Instant.now().isAfter(c.expiration().minusSeconds(60));
     }
 
     public AwsCredentialsProvider getDefault(String profile) {

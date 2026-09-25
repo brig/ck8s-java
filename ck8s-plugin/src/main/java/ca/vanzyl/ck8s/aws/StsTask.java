@@ -68,10 +68,17 @@ public class StsTask implements Task {
                     response.assumedRoleUser().assumedRoleId(), response.assumedRoleUser().arn(),
                     response.credentials().expiration());
 
-            credentialsProvider.setCredentials(SessionCredentials.from(response.credentials()), StsAssumeRole.from(getProfile(input), assertRegion(input), roleArn, roleSessionName));
+            var assumeRole = StsAssumeRole.from(getProfile(input), assertRegion(input), roleArn, roleSessionName);
 
+            // still published process-wide so that flows which have not been migrated keep working
+            credentialsProvider.setCredentials(SessionCredentials.from(response.credentials()), assumeRole);
+
+            // the caller is expected to bind this to CredentialsProvider.ASSUME_ROLE_VARIABLE in the
+            // frame that should run under the role. The task cannot do it itself: a flow call creates
+            // its own root frame, so a variable set here would die with this task's calling flow.
             return TaskResult.success()
                     .value("sessionToken", response.credentials().sessionToken())
+                    .value("assumeRole", assumeRole)
                     .value("credentials", AwsTaskUtils.serialize(response.credentials()));
         } catch (Exception e) {
             log.error("Error assuming role '{}'", roleArn, e);

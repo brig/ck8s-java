@@ -51,7 +51,7 @@ public class Ec2Task implements Task {
 
         try (var client = Ec2Client.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             var request = DescribeLaunchTemplatesRequest.builder();
@@ -77,7 +77,7 @@ public class Ec2Task implements Task {
 
         try (var client = Ec2Client.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             var request = DescribeLaunchTemplateVersionsRequest.builder();
@@ -107,7 +107,7 @@ public class Ec2Task implements Task {
 
         try (var client = Ec2Client.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             var request = CreateLaunchTemplateRequest.builder()
@@ -131,7 +131,7 @@ public class Ec2Task implements Task {
 
         try (var client = Ec2Client.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             var request = DeleteLaunchTemplateRequest.builder()
