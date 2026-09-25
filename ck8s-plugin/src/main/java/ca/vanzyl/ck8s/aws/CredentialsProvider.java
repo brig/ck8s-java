@@ -115,7 +115,7 @@ public class CredentialsProvider implements ExecutionListener {
      * SDK later (retries, async clients) on a thread that has no {@link Context}.
      */
     public AwsCredentialsProvider get(Context context, String profile) {
-        StsAssumeRole scoped = scopedAssumeRole(context);
+        StsAssumeRole scoped = currentRole(context);
         if (scoped == null) {
             return get(profile);
         }
@@ -153,7 +153,7 @@ public class CredentialsProvider implements ExecutionListener {
     }
 
     public AwsSessionCredentials getSessionCredentials(Context context) {
-        StsAssumeRole scoped = scopedAssumeRole(context);
+        StsAssumeRole scoped = currentRole(context);
         if (scoped == null) {
             return getSessionCredentials();
         }
@@ -178,15 +178,17 @@ public class CredentialsProvider implements ExecutionListener {
     }
 
     /**
-     * The role to use for the calling frame.
+     * The role to use for the calling frame, or {@code null} if none was established.
      * <p/>
      * A frame variable wins: frame locals are visible to nested calls and are copied into
      * parallel branches, so a flow wrapped in a role - and every branch it forks - resolves
      * its own. Without one, the process-wide default picked in awsPrereqs applies; that one
      * is not a scope, so it lives in clusterRequest rather than in a frame.
+     * <p/>
+     * This is the single place that knows the order. Flows reach it through
+     * {@code ${ck8sAwsSts.currentRoleArn()}} rather than reading either location directly.
      */
-    // package-private for tests
-    static StsAssumeRole scopedAssumeRole(Context context) {
+    public static StsAssumeRole currentRole(Context context) {
         if (context == null) {
             return null;
         }

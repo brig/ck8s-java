@@ -33,14 +33,14 @@ public class CredentialsProviderTest {
 
     @Test
     public void noRoleInFrameMeansNoScopedRole() {
-        assertNull(CredentialsProvider.scopedAssumeRole(new MockTestContext(Map.of())));
+        assertNull(CredentialsProvider.currentRole(new MockTestContext(Map.of())));
     }
 
     @Test
     public void roleIsReadFromTheFrame() {
         var ctx = new MockTestContext(Map.of(ASSUME_ROLE_VARIABLE, ADMIN));
 
-        assertEquals(ADMIN, CredentialsProvider.scopedAssumeRole(ctx));
+        assertEquals(ADMIN, CredentialsProvider.currentRole(ctx));
     }
 
     /**
@@ -51,8 +51,8 @@ public class CredentialsProviderTest {
         var branchA = new MockTestContext(Map.of(ASSUME_ROLE_VARIABLE, ADMIN));
         var branchB = new MockTestContext(Map.of(ASSUME_ROLE_VARIABLE, APP));
 
-        assertEquals(ADMIN, CredentialsProvider.scopedAssumeRole(branchA));
-        assertEquals(APP, CredentialsProvider.scopedAssumeRole(branchB));
+        assertEquals(ADMIN, CredentialsProvider.currentRole(branchA));
+        assertEquals(APP, CredentialsProvider.currentRole(branchB));
     }
 
     /**
@@ -63,7 +63,7 @@ public class CredentialsProviderTest {
     public void theProcessDefaultAppliesWhenTheFrameNamesNoRole() {
         var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
 
-        assertEquals(APP, CredentialsProvider.scopedAssumeRole(ctx));
+        assertEquals(APP, CredentialsProvider.currentRole(ctx));
     }
 
     @Test
@@ -72,21 +72,21 @@ public class CredentialsProviderTest {
                 ASSUME_ROLE_VARIABLE, ADMIN,
                 "clusterRequest", Map.of("aws", Map.of("assumedRoleInfo", APP))));
 
-        assertEquals(ADMIN, CredentialsProvider.scopedAssumeRole(ctx));
+        assertEquals(ADMIN, CredentialsProvider.currentRole(ctx));
     }
 
     @Test
     public void aClusterRequestWithoutARoleIsNotAnError() {
         var ctx = new MockTestContext(Map.of("clusterRequest", Map.of("aws", Map.of("homeRegion", "us-east-1"))));
 
-        assertNull(CredentialsProvider.scopedAssumeRole(ctx));
+        assertNull(CredentialsProvider.currentRole(ctx));
     }
 
     @Test
     public void aWrongTypeIsReportedWithTheVariableName() {
         var ctx = new MockTestContext(Map.of(ASSUME_ROLE_VARIABLE, "arn:aws:iam::1:role/admin"));
 
-        var e = assertThrows(IllegalStateException.class, () -> CredentialsProvider.scopedAssumeRole(ctx));
+        var e = assertThrows(IllegalStateException.class, () -> CredentialsProvider.currentRole(ctx));
         assertTrue(e.getMessage(), e.getMessage().contains(ASSUME_ROLE_VARIABLE));
     }
 

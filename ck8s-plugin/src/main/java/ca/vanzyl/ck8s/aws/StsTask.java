@@ -27,6 +27,27 @@ public class StsTask implements Task {
         this.context = context;
     }
 
+    /**
+     * The role the caller is running under: the one a wrapper flow established for this
+     * frame, or the process-wide default picked in awsPrereqs. {@code null} if neither.
+     * <p/>
+     * For use from an expression, so that flows do not have to know where the role is kept
+     * or in which order the two places are consulted:
+     * <pre>${ck8sAwsSts.currentRole()}</pre>
+     */
+    public StsAssumeRole currentRole() {
+        return CredentialsProvider.currentRole(context);
+    }
+
+    /**
+     * ARN of {@link #currentRole()}, or {@code null}. Usually the only part a flow needs:
+     * <pre>${ck8sAwsSts.currentRoleArn()}</pre>
+     */
+    public String currentRoleArn() {
+        var role = currentRole();
+        return role != null ? role.roleArn() : null;
+    }
+
     @Override
     @SensitiveData(keys = "sessionToken")
     public TaskResult execute(Variables input) throws Exception {
