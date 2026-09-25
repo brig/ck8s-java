@@ -35,6 +35,7 @@ public class CommandTask
     private final FileService fileService;
     private final boolean withErrorHandler;
     private final CredentialsProvider credentialsProvider;
+    private final Context ctx;
 
     @Inject
     public CommandTask(Context ctx, CredentialsProvider credentialsProvider)
@@ -44,6 +45,7 @@ public class CommandTask
         this.fileService = ctx.fileService();
         this.withErrorHandler = ctx.variables().getBoolean("commandTaskWithErrorHandler", false);
         this.credentialsProvider = credentialsProvider;
+        this.ctx = ctx;
     }
 
     private static void assertEnvVars(Map<String, String> envars)
@@ -64,7 +66,7 @@ public class CommandTask
             throws Exception
     {
         var params = new CommandTaskParams(input);
-        var envParams = enrichEnvWithAwsCredentials(credentialsProvider, params.envars());
+        var envParams = enrichEnvWithAwsCredentials(credentialsProvider, ctx, params.envars());
 
         var debug = params.debug(defaultDebug);
         var runScript = createRunScript(input.getBoolean("withErrorHandler", withErrorHandler), workDir, params.run());
@@ -156,8 +158,8 @@ public class CommandTask
         return scriptPath;
     }
 
-    public static Map<String, String> enrichEnvWithAwsCredentials(CredentialsProvider credentialsProvider, Map<String, String> inputEnv) {
-        var sessionCredentials = credentialsProvider.getSessionCredentials();
+    public static Map<String, String> enrichEnvWithAwsCredentials(CredentialsProvider credentialsProvider, Context ctx, Map<String, String> inputEnv) {
+        var sessionCredentials = credentialsProvider.getSessionCredentials(ctx);
         if (sessionCredentials == null) {
             return inputEnv;
         }
