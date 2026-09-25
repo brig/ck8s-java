@@ -69,7 +69,7 @@ public class EcrTask implements Task {
         }
 
         try (var client = EcrClient.builder()
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .region(region)
                 .build()) {
 
@@ -116,7 +116,7 @@ public class EcrTask implements Task {
 
         try (var client = EcrClient.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             List<ImageFailure> failures = new ArrayList<>();
@@ -152,7 +152,7 @@ public class EcrTask implements Task {
 
         try (var client = EcrClient.builder()
                 .region(assertRegion(input))
-                .credentialsProvider(credentialsProvider.get(input))
+                .credentialsProvider(credentialsProvider.get(context, input))
                 .build()) {
 
             if (!imageExists(client, repositoryName, imageVersion)) {

@@ -7,7 +7,10 @@ import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iam.IamClient;
 
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
+
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Named;
 import java.util.UUID;
 
@@ -15,18 +18,21 @@ import java.util.UUID;
 public class IamClientFactory {
 
     private final CredentialsProvider credentialsProvider;
+    // resolved per call: the factory outlives a single task invocation
+    private final Provider<Context> context;
     private final UUID processInstanceId;
 
     @Inject
-    public IamClientFactory(CredentialsProvider credentialsProvider, InstanceId instanceId) {
+    public IamClientFactory(CredentialsProvider credentialsProvider, InstanceId instanceId, Provider<Context> context) {
         this.credentialsProvider = credentialsProvider;
+        this.context = context;
         this.processInstanceId = instanceId.getValue();
     }
 
     public IamClient create(String profile, Region region) {
         return IamClient.builder()
                 .region(region)
-                .credentialsProvider(credentialsProvider.get(profile))
+                .credentialsProvider(credentialsProvider.get(context.get(), profile))
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .putHeader("User-Agent", AwsUserAgent.build(processInstanceId, "ck8sIam"))
                         .build())
