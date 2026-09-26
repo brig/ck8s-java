@@ -34,11 +34,11 @@ public final class K8sClientFactory {
         var kubeconfigPath = input.baseParams().kubeConfigPath();
         if (kubeconfigPath == null) {
             System.setProperty(KUBERNETES_AUTH_TRYKUBECONFIG_SYSTEM_PROPERTY, "false");
-            builder.withConfig(Config.autoConfigure(null));
+            builder.withConfig(detectClientKeyAlgo(Config.autoConfigure(null)));
         } else {
             try {
                 var config = Files.readString(kubeconfigPath);
-                builder.withConfig(Config.fromKubeconfig(config));
+                builder.withConfig(detectClientKeyAlgo(Config.fromKubeconfig(config)));
                 log.info("Using KUBECONFIG: {}", kubeconfigPath);
             } catch (InvalidPathException e) {
                 throw new IllegalArgumentException("Invalid env.KUBECONFIG path: %s".formatted(kubeconfigPath));
@@ -48,6 +48,20 @@ public final class K8sClientFactory {
         }
 
         return builder.build();
+    }
+
+    // fabric8 only derives clientKeyAlgo from a kubeconfig's static client-key-data, not from the key an
+    // exec credential plugin returns, so a pinniped-issued ECDSA key keeps the "RSA" default and is then
+    // parsed as PKCS#1, failing with "Invalid DER: object is not integer".
+    // Upstream fix: https://github.com/fabric8io/kubernetes-client/pull/8026
+    static Config detectClientKeyAlgo(Config config) {
+        // null for a PKCS#8 key, whose algorithm fabric8 cannot tell from the PEM header
+        var algo = Config.getKeyAlgorithm(config.getClientKeyFile(), config.getClientKeyData());
+        if (algo != null && !algo.equals(config.getClientKeyAlgo())) {
+            log.info("kubeconfig: using the detected '{}' client key algorithm", algo);
+            config.setClientKeyAlgo(algo);
+        }
+        return config;
     }
 
     public static void patchEnvInKubeconfig(Path path, Map<String, Object> env) throws IOException {
