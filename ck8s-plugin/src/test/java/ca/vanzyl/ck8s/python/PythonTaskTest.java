@@ -6,6 +6,7 @@ import ca.vanzyl.ck8s.command.CliCommand;
 import com.walmartlabs.concord.runtime.v2.runner.DefaultFileService;
 import com.walmartlabs.concord.runtime.v2.sdk.FileService;
 import com.walmartlabs.concord.runtime.v2.sdk.MapBackedVariables;
+import com.walmartlabs.concord.runtime.v2.sdk.UserDefinedException;
 import com.walmartlabs.concord.runtime.v2.sdk.WorkingDirectory;
 import nl.altindag.log.LogCaptor;
 import org.junit.Ignore;
@@ -54,13 +55,17 @@ public class PythonTaskTest {
     public void argumentsWithSpacesNegative()
             throws Exception {
         cleanVenv("/python/test-python-single-argument.py");
-        assertFalse(
-                task.execute(new MapBackedVariables(Map.of(
-                        "script",
-                        Objects.requireNonNull(
-                                getClass().getResource("/python/test-python-single-argument.py")).toURI().getPath(),
-                        "args", List.of("whitespace", "argument")
-                ))).ok());
+        try {
+            task.execute(new MapBackedVariables(Map.of(
+                    "script",
+                    Objects.requireNonNull(
+                            getClass().getResource("/python/test-python-single-argument.py")).toURI().getPath(),
+                    "args", List.of("whitespace", "argument")
+            )));
+            fail("Exception not thrown");
+        } catch (UserDefinedException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("test-python-single-argument.py"));
+        }
     }
 
     @Test
@@ -79,14 +84,18 @@ public class PythonTaskTest {
     public void inVenvNegative()
             throws Exception {
         cleanVenv("/python/test-python-venv.py");
-        assertFalse(
-                task.execute(new MapBackedVariables(Map.of(
-                        "script",
-                        Objects.requireNonNull(
-                                getClass().getResource("/python/test-python-venv.py")).toURI().getPath(),
-                        "venv",
-                        false
-                ))).ok());
+        try {
+            task.execute(new MapBackedVariables(Map.of(
+                    "script",
+                    Objects.requireNonNull(
+                            getClass().getResource("/python/test-python-venv.py")).toURI().getPath(),
+                    "venv",
+                    false
+            )));
+            fail("Exception not thrown");
+        } catch (UserDefinedException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("test-python-venv.py"));
+        }
     }
 
     @Test

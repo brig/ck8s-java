@@ -21,7 +21,10 @@ cd %WORK_DIR%
 if [[ -n "${VENV}" ]]; then
   if [[ -n "${REUSE_VENV}" ]]; then
     if [[ -n "${VENV_NAME}" ]]; then
-      VENV_DIR=${TMPDIR:-/tmp/}ck8s-plugin-venv/${VENV_NAME}
+      VENV_DIR=${TMPDIR:-/tmp}/ck8s-plugin-venv/${VENV_NAME}
+      # bash opens the lock redirection below before it runs the block, so the parent
+      # directory has to exist already — python3 -m venv would create it too late
+      mkdir -p "$(dirname "${VENV_DIR}")"
     else
       VENV_DIR=${SCRIPT_DIR}/.venv
     fi
