@@ -10,6 +10,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Branch of walmartlabs/concord to build and install before ck8s-java. Concord snapshots are
+  # published nowhere, so a -SNAPSHOT concord.version only resolves once it is built here. Clear
+  # this once concord.version points at a release, and concord comes from the release repositories.
+  concordRef: brig/versions-up
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +30,19 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: maven
+
+      - name: Checkout concord
+        if: env.concordRef != ''
+        uses: actions/checkout@v4
+        with:
+          repository: walmartlabs/concord
+          ref: ${{ env.concordRef }}
+          path: .concord
+
+      - name: Install concord
+        if: env.concordRef != ''
+        working-directory: .concord
+        run: ./mvnw -B install -DskipTests
 
       - name: Build
         run: ./mvnw -B clean install
