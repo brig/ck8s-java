@@ -8,14 +8,20 @@ import com.walmartlabs.concord.common.ConfigurationUtils;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientBuilder;
+import io.fabric8.kubernetes.client.internal.CertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,18 +56,47 @@ public final class K8sClientFactory {
         return builder.build();
     }
 
-    // fabric8 only derives clientKeyAlgo from a kubeconfig's static client-key-data, not from the key an
-    // exec credential plugin returns, so a pinniped-issued ECDSA key keeps the "RSA" default and is then
-    // parsed as PKCS#1, failing with "Invalid DER: object is not integer".
-    // Upstream fix: https://github.com/fabric8io/kubernetes-client/pull/8026
+    // fabric8 leaves clientKeyAlgo at its "RSA" default for the key an exec credential plugin returns,
+    // and then reads an ECDSA key as PKCS#1, failing with "Invalid DER: object is not integer". Telling
+    // it the key is EC is enough: CertUtils#loadKey has a working path for both EC encodings.
+    // Upstream fixes only the armoured case: https://github.com/fabric8io/kubernetes-client/pull/8026
     static Config detectClientKeyAlgo(Config config) {
-        // null for a PKCS#8 key, whose algorithm fabric8 cannot tell from the PEM header
+        if (config.getClientKeyData() == null && config.getClientKeyFile() == null) {
+            return config;
+        }
+
         var algo = Config.getKeyAlgorithm(config.getClientKeyFile(), config.getClientKeyData());
+        if (algo == null) {
+            // pinniped hands back a PKCS#8 key, whose "BEGIN PRIVATE KEY" header names no algorithm
+            algo = pkcs8ClientKeyAlgo(config);
+        }
+
         if (algo != null && !algo.equals(config.getClientKeyAlgo())) {
             log.info("kubeconfig: using the detected '{}' client key algorithm", algo);
             config.setClientKeyAlgo(algo);
         }
         return config;
+    }
+
+    private static String pkcs8ClientKeyAlgo(Config config) {
+        byte[] der;
+        try (var pem = CertUtils.getInputStreamFromDataOrFile(config.getClientKeyData(), config.getClientKeyFile())) {
+            var armoured = new String(pem.readAllBytes(), StandardCharsets.UTF_8);
+            der = Base64.getMimeDecoder().decode(armoured.replaceAll("-----(BEGIN|END)[^-]*-----", ""));
+        } catch (IOException | IllegalArgumentException e) {
+            log.warn("kubeconfig: cannot read the client key to detect its algorithm: {}", e.getMessage());
+            return null;
+        }
+
+        for (var candidate : List.of("EC", "RSA")) {
+            try {
+                KeyFactory.getInstance(candidate).generatePrivate(new PKCS8EncodedKeySpec(der));
+                return candidate;
+            } catch (GeneralSecurityException e) {
+                // not this algorithm, try the next one
+            }
+        }
+        return null;
     }
 
     public static void patchEnvInKubeconfig(Path path, Map<String, Object> env) throws IOException {
