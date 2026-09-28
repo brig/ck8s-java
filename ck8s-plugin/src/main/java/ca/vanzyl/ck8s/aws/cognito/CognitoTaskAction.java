@@ -14,8 +14,8 @@ public abstract class CognitoTaskAction<T extends CognitoTaskParams> implements 
         this.clientFactory = clientFactory;
     }
 
-    protected CognitoIdentityProviderClient createClient(CognitoTaskParams input) {
-        return clientFactory.create(input.baseParams().profile(), input.baseParams().region());
+    protected CognitoIdentityProviderClient createClient(Context context, CognitoTaskParams input) {
+        return clientFactory.create(context, input.baseParams().profile(), input.baseParams().region());
     }
 
     @Override

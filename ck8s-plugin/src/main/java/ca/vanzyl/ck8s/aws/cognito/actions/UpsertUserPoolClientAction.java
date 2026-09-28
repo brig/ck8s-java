@@ -50,7 +50,7 @@ public class UpsertUserPoolClientAction extends CognitoTaskAction<CognitoTaskPar
         var allowedOAuthScopes = input.allowedOAuthScopes();
         var explicitAuthFlows = input.explicitAuthFlows();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingClient = getClient(client, poolId, clientName);
             if (existingClient == null) {
                 log.info("User pool client '{}' in '{}' user pool does not exists. Creating it...", clientName, poolId);

@@ -2,14 +2,15 @@ package ca.vanzyl.ck8s.aws.iam.state;
 
 import ca.vanzyl.ck8s.aws.iam.IamClientFactory;
 import ca.vanzyl.ck8s.aws.iam.actions.CreatePolicyAction;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.regions.Region;
 
 import static ca.vanzyl.ck8s.aws.iam.actions.CreatePolicyOrVerifyAction.policyDocument;
 
 public class IamManagedPolicyLoader extends AbstractIamEntityLoader<IamManagedPolicyKey, IamManagedPolicy> {
 
-    public IamManagedPolicyLoader(IamClientFactory clientFactory, String profile, Region region) {
-        super(clientFactory, profile, region);
+    public IamManagedPolicyLoader(Context context, IamClientFactory clientFactory, String profile, Region region) {
+        super(context, clientFactory, profile, region);
     }
 
     @Override

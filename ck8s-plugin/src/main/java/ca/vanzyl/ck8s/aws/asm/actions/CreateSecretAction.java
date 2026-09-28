@@ -34,7 +34,7 @@ public class CreateSecretAction extends AsmTaskAction<AsmTaskParams.CreateSecret
                 .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                 .toList();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             try {
                 client.createSecret(r -> {
                     r.name(name)

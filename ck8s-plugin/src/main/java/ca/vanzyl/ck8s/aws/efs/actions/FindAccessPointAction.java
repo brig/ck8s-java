@@ -40,7 +40,7 @@ public class FindAccessPointAction extends EfsTaskAction<EfsTaskParams.FindAcces
         var efsId = input.efsId();
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var accessPoint = findAccessPoint(client, efsId, name);
             if (accessPoint == null) {
                 return TaskResult.success();

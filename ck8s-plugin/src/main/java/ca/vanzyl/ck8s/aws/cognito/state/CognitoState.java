@@ -3,6 +3,7 @@ package ca.vanzyl.ck8s.aws.cognito.state;
 import ca.vanzyl.ck8s.aws.cognito.CognitoClientFactory;
 import ca.vanzyl.ck8s.aws.cognito.CognitoTaskParams;
 import ca.vanzyl.ck8s.state.EntityState;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,59 +20,59 @@ public class CognitoState {
         this.clientFactory = clientFactory;
     }
 
-    public UserPool userPoolByName(CognitoTaskParams.BaseParams baseParams, String poolName, String poolId) {
+    public UserPool userPoolByName(Context context, CognitoTaskParams.BaseParams baseParams, String poolName, String poolId) {
         var userPoolId = state.getOrLoad(new UserPoolIdKey(poolName),
-                new CognitoUserPoolIdLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new CognitoUserPoolIdLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
 
         if (userPoolId == null) {
             state.put(new UserPoolKey(poolId), null);
             return null;
         }
 
-        return userPoolById(baseParams, userPoolId.id());
+        return userPoolById(context, baseParams, userPoolId.id());
     }
 
-    public UserPool userPoolById(CognitoTaskParams.BaseParams baseParams, String poolId) {
+    public UserPool userPoolById(Context context, CognitoTaskParams.BaseParams baseParams, String poolId) {
         return state.getOrLoad(new UserPoolKey(poolId),
-                new CognitoUserPoolByIdLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new CognitoUserPoolByIdLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(UserPool pool) {
         state.put(new UserPoolKey(pool.id()), pool);
     }
 
-    public IdentityProvider identityProvider(CognitoTaskParams.BaseParams baseParams,
+    public IdentityProvider identityProvider(Context context, CognitoTaskParams.BaseParams baseParams,
                                              String poolId,
                                              String providerName) {
         return state.getOrLoad(new IdentityProviderKey(poolId, providerName),
-                new CognitoIdentityProviderLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new CognitoIdentityProviderLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(IdentityProvider identityProvider) {
         state.put(new IdentityProviderKey(identityProvider.poolId(), identityProvider.name()), identityProvider);
     }
 
-    public ResourceServer resourceServer(CognitoTaskParams.BaseParams baseParams, String poolId, String identifier) {
+    public ResourceServer resourceServer(Context context, CognitoTaskParams.BaseParams baseParams, String poolId, String identifier) {
         return state.getOrLoad(new ResourceServerKey(poolId, identifier),
-                new ResourceServerLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new ResourceServerLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(ResourceServer resourceServer) {
         state.put(new ResourceServerKey(resourceServer.poolId(), resourceServer.identifier()), resourceServer);
     }
 
-    public UserPoolClient userPoolClient(CognitoTaskParams.BaseParams baseParams, String poolId, String clientName) {
+    public UserPoolClient userPoolClient(Context context, CognitoTaskParams.BaseParams baseParams, String poolId, String clientName) {
         return state.getOrLoad(new UserPoolClientKey(poolId, clientName),
-                new UserPoolClientLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new UserPoolClientLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(UserPoolClient userPoolClient) {
         state.put(new UserPoolClientKey(userPoolClient.poolId(), userPoolClient.clientName()), userPoolClient);
     }
 
-    public UserPoolUser user(CognitoTaskParams.BaseParams baseParams, String poolId, String username) {
+    public UserPoolUser user(Context context, CognitoTaskParams.BaseParams baseParams, String poolId, String username) {
         return state.getOrLoad(new UserPoolUserKey(poolId, username),
-                new UserPoolUserLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new UserPoolUserLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(UserPoolUser user) {

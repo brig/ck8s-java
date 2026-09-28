@@ -1,14 +1,11 @@
 package ca.vanzyl.ck8s.secrets.aws;
 
 import ca.vanzyl.ck8s.aws.CredentialsProvider;
-import com.walmartlabs.concord.runtime.v2.sdk.Context;
-
-import javax.inject.Provider;
 import ca.vanzyl.ck8s.secrets.*;
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
@@ -28,31 +25,21 @@ public class AsmSecretsRetriever
     private final boolean debug;
     private final boolean useCache;
     private final CredentialsProvider credentialsProvider;
-    // the retriever is cached across calls, so the context is resolved per use
-    private final Provider<Context> context;
 
-    private final LoadingCache<DocumentKey, Map<String, String>> cache = CacheBuilder.newBuilder()
-            .build(new CacheLoader<>() {
-                @Override
-                public Map<String, String> load(DocumentKey key) {
-                    return fetchSecretsDocumentAsMap(key);
-                }
-            });
+    private final Cache<DocumentKey, Map<String, String>> cache = CacheBuilder.newBuilder().build();
 
     public AsmSecretsRetriever(String region, String profile, String secretsDocument,
                                boolean debug, boolean cacheSecretsDocument,
-                               CredentialsProvider credentialsProvider,
-                               Provider<Context> context) {
+                               CredentialsProvider credentialsProvider) {
         this.documentKey = new DocumentKey(region, profile, secretsDocument);
         this.debug = debug;
         this.useCache = cacheSecretsDocument;
         this.credentialsProvider = credentialsProvider;
-        this.context = context;
     }
 
     @Override
-    public String get(String key) {
-        String result = map().get(key);
+    public String get(Context context, String key) {
+        String result = map(context).get(key);
 
         if (result == null || result.trim().isEmpty()) {
             log.info("get ['{}', '{}'] -> secret value not found ('{}')",
@@ -63,19 +50,19 @@ public class AsmSecretsRetriever
     }
 
     @Override
-    public Map<String, String> map() {
+    public Map<String, String> map(Context context) {
         if (useCache) {
             try {
-                return cache.get(documentKey);
+                return cache.get(documentKey, () -> fetchSecretsDocumentAsMap(context, documentKey));
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
-        return fetchSecretsDocumentAsMap(documentKey);
+        return fetchSecretsDocumentAsMap(context, documentKey);
     }
 
-    private Map<String, String> fetchSecretsDocumentAsMap(DocumentKey key) {
-        GetSecretValueResponse response = new AsmClient(credentialsProvider, context.get(), key.region(), key.profile()).get(key.secretsDocument());
+    private Map<String, String> fetchSecretsDocumentAsMap(Context context, DocumentKey key) {
+        GetSecretValueResponse response = new AsmClient(credentialsProvider, context, key.region(), key.profile()).get(key.secretsDocument());
         if (response == null) {
             log.warn("fetchSecretsDocumentAsMap ['{}'] -> null response from asm", key.secretsDocument());
             return null;
@@ -100,8 +87,8 @@ public class AsmSecretsRetriever
     }
 
     @Override
-    public void delete(String key) {
-        new AsmClient(credentialsProvider, context.get(), documentKey.region, documentKey.profile)
+    public void delete(Context context, String key) {
+        new AsmClient(credentialsProvider, context, documentKey.region, documentKey.profile)
                 .update(documentKey.secretsDocument, secret -> {
                     if (debug) {
                         log.info("Removing '{}' from secret '{}'", key, documentKey);
@@ -123,8 +110,8 @@ public class AsmSecretsRetriever
     }
 
     @Override
-    public void put(String key, String value, String description) {
-        new AsmClient(credentialsProvider, context.get(), documentKey.region, documentKey.profile)
+    public void put(Context context, String key, String value, String description) {
+        new AsmClient(credentialsProvider, context, documentKey.region, documentKey.profile)
                 .update(documentKey.secretsDocument, secret -> {
                     if (debug) {
                         log.info("Updating secret '{}' with '{}'", documentKey, key);

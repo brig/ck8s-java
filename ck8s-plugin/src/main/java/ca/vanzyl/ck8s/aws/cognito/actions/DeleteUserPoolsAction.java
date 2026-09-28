@@ -111,7 +111,7 @@ public class DeleteUserPoolsAction extends CognitoTaskAction<CognitoTaskParams.D
             return TaskResult.success();
         }
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
 
             deleteUserPools(client, ids);
 

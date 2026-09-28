@@ -30,7 +30,7 @@ public class ListRolesAction extends IamTaskAction<ListRolesParams> {
 
     @Override
     public TaskResult execute(Context context, ListRolesParams input) throws Exception {
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var roles = client.listRolesPaginator(ListRolesRequest.builder().build()).stream()
                     .flatMap(r -> r.roles().stream())
                     .map(AwsTaskUtils::serialize)

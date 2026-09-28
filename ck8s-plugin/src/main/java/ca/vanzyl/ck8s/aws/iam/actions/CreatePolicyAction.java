@@ -37,7 +37,7 @@ public class CreatePolicyAction extends IamTaskAction<CreatePolicyParams> {
 
         dumpInput(input);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             if (getPolicy(client, policyArn) != null) {
                 log.info("Policy '{}' exists. Updating it...", policyName);
 

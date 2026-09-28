@@ -45,7 +45,7 @@ public class CreatePolicyCloudFormationAction extends IamTaskAction<CreatePolicy
 
 
         // just to load current policy
-        state.managedPolicy(input.baseParams(), policyArn);
+        state.managedPolicy(context, input.baseParams(), policyArn);
         state.put(new IamManagedPolicy(policyArn, policyName, policyDocument));
 
         return TaskResult.success();

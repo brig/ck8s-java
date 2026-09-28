@@ -40,7 +40,7 @@ public class GetUserPoolClientAction extends CognitoTaskAction<CognitoTaskParams
         var poolId = input.poolId();
         var clientId = input.clientId();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var poolClient = client.describeUserPoolClient(r -> r.userPoolId(poolId)
                             .clientId(clientId))
                     .userPoolClient();

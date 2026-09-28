@@ -43,7 +43,7 @@ public class VerifyUserPoolAction extends CognitoTaskAction<CognitoTaskParams.Cr
     public TaskResult execute(Context context, CognitoTaskParams.CreateUserPoolParams input) throws Exception {
         var poolName = input.poolName();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var poolId = UpsertUserPoolAction.finPoolIdByName(client, poolName);
             if (poolId == null) {
                 log.error("❌ Cognito User Pool '{}' does not exists", poolName);

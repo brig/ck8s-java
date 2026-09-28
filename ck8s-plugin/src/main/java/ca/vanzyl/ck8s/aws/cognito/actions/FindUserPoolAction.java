@@ -36,7 +36,7 @@ public class FindUserPoolAction extends CognitoTaskAction<CognitoTaskParams.Find
     @Override
     public TaskResult execute(Context context, CognitoTaskParams.FindUserPoolParams input) throws Exception {
         var poolName = input.poolName();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var userPoolId = UpsertUserPoolAction.finPoolIdByName(client, poolName);
 
             if (userPoolId == null) {

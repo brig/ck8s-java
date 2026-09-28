@@ -33,7 +33,7 @@ public class UpsertUserPoolUICustomizationAction extends CognitoTaskAction<Cogni
     public TaskResult execute(Context context, CognitoTaskParams.CreateUserPoolUICustomizationParams input) throws Exception {
         var poolId = input.poolId();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingCustomization = getUiCustomization(client, poolId);
             if (existingCustomization == null) {
                 log.info("User pool '{}' UI Customization does not exists. Creating it...", poolId);

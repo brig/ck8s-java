@@ -33,7 +33,7 @@ public class VerifyUserPoolClientCallbacksAction extends CognitoTaskAction<Cogni
         var poolId = input.poolId();
         var clientId = input.clientId();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingClient = getClientById(client, poolId, clientId);
             if (existingClient == null) {
                 log.info("❌ User pool client '{}' in '{}' user pool does not exists", clientId, poolId);

@@ -37,7 +37,7 @@ public class PutPolicyOrVerifyAction extends IamTaskAction<PutRolePolicyParams> 
         var policyName = input.policyName();
         var policyDocument = input.policyDocument();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var currentDocument = inlinePolicyDocument(client, roleName, policyName);
             if (currentDocument != null) {
                 log.info("Inline policy '{}' for role '{}' exists. Verifying it...", policyName, roleName);

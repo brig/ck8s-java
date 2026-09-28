@@ -18,12 +18,12 @@ public abstract class GlueTaskAction<T extends GlueTaskParams> implements TaskAc
         this.clientFactory = clientFactory;
     }
 
-    protected GlueClient createClient(GlueTaskParams input) {
-        return createClient(input.baseParams());
+    protected GlueClient createClient(Context context, GlueTaskParams input) {
+        return createClient(context, input.baseParams());
     }
 
-    protected GlueClient createClient(GlueTaskParams.BaseParams params) {
-        return clientFactory.create(params.profile(), params.region());
+    protected GlueClient createClient(Context context, GlueTaskParams.BaseParams params) {
+        return clientFactory.create(context, params.profile(), params.region());
     }
 
     public enum Action implements ActionName {

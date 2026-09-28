@@ -42,13 +42,13 @@ public class UpsertResourceServerPreviewAction extends CognitoTaskAction<Cognito
         var name = input.name();
         var identifier = input.identifier();
 
-        var pool = state.userPoolById(input.baseParams(), poolId);
+        var pool = state.userPoolById(context, input.baseParams(), poolId);
         if (pool == null) {
             log.info("[PREVIEW] Can't find user pool '{}' for resource server '{}'", poolId, name);
             return TaskResult.fail("User pool '" + poolId + "' does not exist.");
         }
 
-        var existingResourceServer = state.resourceServer(input.baseParams(), poolId, identifier);
+        var existingResourceServer = state.resourceServer(context, input.baseParams(), poolId, identifier);
         if (existingResourceServer == null) {
             log.info("[PREVIEW] Resource server '{}' in pool '{}' does not exists. Creating it...", identifier, poolId);
 

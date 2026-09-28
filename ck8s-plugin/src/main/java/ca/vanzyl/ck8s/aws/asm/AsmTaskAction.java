@@ -14,8 +14,8 @@ public abstract class AsmTaskAction<T extends AsmTaskParams> implements TaskActi
         this.clientFactory = clientFactory;
     }
 
-    protected SecretsManagerClient createClient(AsmTaskParams input) {
-        return clientFactory.create(input.baseParams().profile(), input.baseParams().region());
+    protected SecretsManagerClient createClient(Context context, AsmTaskParams input) {
+        return clientFactory.create(context, input.baseParams().profile(), input.baseParams().region());
     }
 
     @Override

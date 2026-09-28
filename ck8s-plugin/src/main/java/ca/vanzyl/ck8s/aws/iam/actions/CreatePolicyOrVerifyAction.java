@@ -38,7 +38,7 @@ public class CreatePolicyOrVerifyAction extends IamTaskAction<CreatePolicyParams
         var policyArn = input.policyArn();
         var policyDocument = input.policyDocument();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var policy = CreatePolicyAction.getPolicy(client, policyArn);
             if (policy != null) {
                 log.info("Policy '{}' exists. Verifying it...", policyName);

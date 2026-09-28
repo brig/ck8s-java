@@ -18,12 +18,12 @@ public abstract class EfsTaskAction<T extends EfsTaskParams> implements TaskActi
         this.clientFactory = clientFactory;
     }
 
-    protected EfsClient createClient(EfsTaskParams input) {
-        return createClient(input.baseParams());
+    protected EfsClient createClient(Context context, EfsTaskParams input) {
+        return createClient(context, input.baseParams());
     }
 
-    protected EfsClient createClient(EfsTaskParams.BaseParams params) {
-        return clientFactory.create(params.profile(), params.region());
+    protected EfsClient createClient(Context context, EfsTaskParams.BaseParams params) {
+        return clientFactory.create(context, params.profile(), params.region());
     }
 
     public enum Action implements ActionName {

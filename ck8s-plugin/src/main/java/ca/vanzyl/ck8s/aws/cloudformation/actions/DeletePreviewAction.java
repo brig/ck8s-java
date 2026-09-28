@@ -35,7 +35,7 @@ public class DeletePreviewAction extends CloudFormationTaskAction<CloudFormation
     public TaskResult execute(Context context, CloudFormationTaskParams.DeleteParams input) {
         var stackName = input.stackName();
 
-        var stack = state.stack(input.baseParams(), stackName);
+        var stack = state.stack(context, input.baseParams(), stackName);
         if (stack != null) {
             state.deleteStack(input.baseParams().region().id(), stack.stackName());
         }

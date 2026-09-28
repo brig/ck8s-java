@@ -32,7 +32,7 @@ public class TagBucketAction extends S3TaskAction<S3TaskParams.TagBucketParams> 
         var bucket = input.bucket();
         var tags = input.tags();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             client.putBucketTagging(PutBucketTaggingRequest.builder()
                     .bucket(bucket)
                     .tagging(Tagging.builder().tagSet(tags).build())

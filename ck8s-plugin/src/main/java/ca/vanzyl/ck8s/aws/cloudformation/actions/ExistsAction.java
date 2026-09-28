@@ -37,7 +37,7 @@ public class ExistsAction extends CloudFormationTaskAction<CloudFormationTaskPar
     @Override
     public TaskResult execute(Context context, CloudFormationTaskParams.ExistsParams input) {
         var stackName = input.stackName();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var exists = stackExists(client, stackName);
 
             log.info("CloudFormation stack '{}' {}", stackName, exists ? "exists" : "does not exist");

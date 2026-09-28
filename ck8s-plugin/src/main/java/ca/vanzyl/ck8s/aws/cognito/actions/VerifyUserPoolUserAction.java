@@ -37,7 +37,7 @@ public class VerifyUserPoolUserAction extends CognitoTaskAction<CognitoTaskParam
         var poolId = input.poolId();
         var username = input.username();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingUser = CreateUserPoolUserAction.getUser(client, poolId, username);
             if (existingUser == null) {
                 log.error("❌ User '{}' does not exists in user pool '{}'", username, poolId);

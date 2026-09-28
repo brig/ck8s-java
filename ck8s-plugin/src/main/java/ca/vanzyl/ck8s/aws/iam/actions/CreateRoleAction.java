@@ -37,7 +37,7 @@ public class CreateRoleAction extends IamTaskAction<CreateRoleParams> {
 
         dumpInput(input);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             if (GetRoleAction.getRole(client, roleName) != null) {
                 log.info("Role '{}' exists. Updating it...", roleName);
                 updateTrustPolicy(client, roleName, trustPolicy);

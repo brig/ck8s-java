@@ -36,7 +36,7 @@ public class DeployAction extends CloudFormationTaskAction<CloudFormationTaskPar
         var parameters = input.parameterOverrides();
         var templateBody = input.templateBody();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var stackExists = stackExists(client, stackName);
 
             if (stackExists) {

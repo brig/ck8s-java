@@ -37,7 +37,7 @@ public class DeletePolicyAction extends IamTaskAction<DeletePolicyParams> {
 
         log.info("Deleting managed policy '{}'...", policyArn);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             if (getPolicy(client, policyArn) == null) {
                 log.info("✅ Policy '{}' does not exist", policyArn);
                 return TaskResult.success();

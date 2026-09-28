@@ -38,10 +38,10 @@ public class DeletePolicyPreviewAction extends IamTaskAction<DeletePolicyParams>
     public TaskResult execute(Context context, DeletePolicyParams input) throws Exception {
         var policyArn = input.policyArn();
 
-        var policy = state.managedPolicy(input.baseParams(), policyArn);
+        var policy = state.managedPolicy(context, input.baseParams(), policyArn);
         if (policy != null) {
             if (input.detachFromResources()) {
-                var roles = state.listRolesForPolicy(input.baseParams(), policyArn);
+                var roles = state.listRolesForPolicy(context, input.baseParams(), policyArn);
                 for (IamRole role : roles) {
                     var attachedPolicies = new HashSet<>(role.attachedPolicyArns());
                     attachedPolicies.remove(policyArn);

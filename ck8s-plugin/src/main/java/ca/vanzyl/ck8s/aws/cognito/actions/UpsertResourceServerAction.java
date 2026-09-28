@@ -44,7 +44,7 @@ public class UpsertResourceServerAction extends CognitoTaskAction<CognitoTaskPar
         var identifier = input.identifier();
         var scopes = input.scopes();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingResourceServer = getResourceServer(client, poolId, identifier);
             if (existingResourceServer == null) {
                 log.info("Resource server '{}' in pool '{}' does not exists. Creating it...", identifier, poolId);

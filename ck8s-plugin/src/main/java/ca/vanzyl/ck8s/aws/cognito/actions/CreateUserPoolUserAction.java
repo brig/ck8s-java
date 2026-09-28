@@ -31,7 +31,7 @@ public class CreateUserPoolUserAction extends CognitoTaskAction<CognitoTaskParam
         var poolId = input.poolId();
         var username = input.username();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingUser = getUser(client, poolId, username);
             if (existingUser == null) {
                 log.info("User '{}' in user pool '{}' does not exists. Creating it...", username, poolId);

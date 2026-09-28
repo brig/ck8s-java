@@ -18,12 +18,12 @@ public abstract class RdsTaskAction<T extends RdsTaskParams> implements TaskActi
         this.clientFactory = clientFactory;
     }
 
-    protected RdsClient createClient(RdsTaskParams input) {
-        return createClient(input.baseParams());
+    protected RdsClient createClient(Context context, RdsTaskParams input) {
+        return createClient(context, input.baseParams());
     }
 
-    protected RdsClient createClient(RdsTaskParams.BaseParams params) {
-        return clientFactory.create(params.profile(), params.region());
+    protected RdsClient createClient(Context context, RdsTaskParams.BaseParams params) {
+        return clientFactory.create(context, params.profile(), params.region());
     }
 
     public enum Action implements ActionName {

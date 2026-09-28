@@ -37,7 +37,7 @@ public class FindFileSystemAction extends EfsTaskAction<EfsTaskParams.FindFileSy
     public TaskResult execute(Context context, EfsTaskParams.FindFileSystemParams input) throws Exception {
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var efs = client.describeFileSystemsPaginator().fileSystems().stream()
                     .filter(FileSystemDescription::hasTags)
                     .filter(fs -> fs.tags().stream()
