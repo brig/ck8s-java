@@ -29,7 +29,7 @@ public class UpdateSecretAction extends AsmTaskAction<AsmTaskParams.UpdateSecret
     public TaskResult execute(Context context, AsmTaskParams.UpdateSecretParams input) throws Exception {
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             client.updateSecret(r -> r.secretId(name)
                     .secretString(input.secretString()));
 

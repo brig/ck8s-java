@@ -38,7 +38,7 @@ public class FetchEndpointAction extends RdsTaskAction<RdsTaskParams.FetchEndpoi
         var engine = input.engine();
         var identifier = input.identifier();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             String endpoint;
             if (engine.toLowerCase().contains("aurora")) {
                 endpoint = getAuroraEndpoint(client, identifier);

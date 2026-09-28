@@ -31,7 +31,7 @@ public class DeleteRoleAction extends IamTaskAction<DeleteRoleParams> {
     public TaskResult execute(Context context, DeleteRoleParams input) throws Exception {
         var roleName = input.roleName();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             log.info("Deleting '{}' role...", roleName);
 
             if (GetRoleAction.getRole(client, roleName) == null) {

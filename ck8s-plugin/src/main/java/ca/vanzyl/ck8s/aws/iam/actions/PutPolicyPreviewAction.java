@@ -42,13 +42,13 @@ public class PutPolicyPreviewAction extends IamTaskAction<PutRolePolicyParams> {
 
         dumpInput(input);
 
-        var role = state.role(input.baseParams(), roleName);
+        var role = state.role(context, input.baseParams(), roleName);
         if (role == null) {
             return TaskResult.fail("Role '" + roleName + "' not found");
         }
 
         // just to load current version
-        state.inlinePolicy(input.baseParams(), roleName, policyName);
+        state.inlinePolicy(context, input.baseParams(), roleName, policyName);
 
         state.put(roleName, new IamInlinePolicy(roleName, policyName, policyDocument));
 

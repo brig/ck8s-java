@@ -24,7 +24,7 @@ public class ListUserPoolsAction extends CognitoTaskAction<CognitoTaskParams.Lis
     @Override
     public TaskResult execute(Context context, CognitoTaskParams.ListUserPoolsParams input) throws Exception {
         var maxResults = input.maxResults();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var userPools = client.listUserPoolsPaginator(
                             ListUserPoolsRequest.builder()
                                     .maxResults(maxResults)

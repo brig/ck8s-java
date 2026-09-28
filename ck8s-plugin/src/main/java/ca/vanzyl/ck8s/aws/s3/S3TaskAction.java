@@ -18,12 +18,12 @@ public abstract class S3TaskAction <T extends S3TaskParams> implements TaskActio
         this.clientFactory = clientFactory;
     }
 
-    protected S3Client createClient(S3TaskParams input) {
-        return createClient(input.baseParams());
+    protected S3Client createClient(Context context, S3TaskParams input) {
+        return createClient(context, input.baseParams());
     }
 
-    protected S3Client createClient(S3TaskParams.BaseParams params) {
-        return clientFactory.create(params.profile(), params.region());
+    protected S3Client createClient(Context context, S3TaskParams.BaseParams params) {
+        return clientFactory.create(context, params.profile(), params.region());
     }
 
     public enum Action implements ActionName {

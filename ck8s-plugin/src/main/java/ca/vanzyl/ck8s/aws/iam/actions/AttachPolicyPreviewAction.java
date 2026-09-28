@@ -39,12 +39,12 @@ public class AttachPolicyPreviewAction extends IamTaskAction<AttachPolicyParams>
         var policyName = input.policyName();
         var policyArn = input.policyArn();
 
-        var role = state.role(input.baseParams(), roleName);
+        var role = state.role(context, input.baseParams(), roleName);
         if (role == null) {
             return TaskResult.fail("Role '" + roleName + "' not found");
         }
 
-        var policy = state.managedPolicy(input.baseParams(), policyArn);
+        var policy = state.managedPolicy(context, input.baseParams(), policyArn);
         if (policy == null) {
             return TaskResult.fail("Policy '" + policyName + "' not found");
         }

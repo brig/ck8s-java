@@ -3,14 +3,12 @@ package ca.vanzyl.ck8s.aws.rds;
 import ca.vanzyl.ck8s.aws.AwsUserAgent;
 import ca.vanzyl.ck8s.aws.CredentialsProvider;
 import com.walmartlabs.concord.runtime.common.injector.InstanceId;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rds.RdsClient;
 
-import com.walmartlabs.concord.runtime.v2.sdk.Context;
-
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Named;
 import java.util.UUID;
 
@@ -18,21 +16,18 @@ import java.util.UUID;
 public class RdsClientFactory {
 
     private final CredentialsProvider credentialsProvider;
-    // resolved per call: the factory outlives a single task invocation
-    private final Provider<Context> context;
     private final UUID processInstanceId;
 
     @Inject
-    public RdsClientFactory(CredentialsProvider credentialsProvider, InstanceId instanceId, Provider<Context> context) {
+    public RdsClientFactory(CredentialsProvider credentialsProvider, InstanceId instanceId) {
         this.credentialsProvider = credentialsProvider;
-        this.context = context;
         this.processInstanceId = instanceId.getValue();
     }
 
-    public RdsClient create(String profile, Region region) {
+    public RdsClient create(Context context, String profile, Region region) {
         return RdsClient.builder()
                 .region(region)
-                .credentialsProvider(credentialsProvider.get(context.get(), profile))
+                .credentialsProvider(credentialsProvider.get(context, profile))
                 .overrideConfiguration(ClientOverrideConfiguration.builder()
                         .putHeader("User-Agent", AwsUserAgent.build(processInstanceId, "ck8sRds"))
                         .build())

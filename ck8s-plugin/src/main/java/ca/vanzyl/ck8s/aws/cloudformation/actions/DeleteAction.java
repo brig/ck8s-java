@@ -33,7 +33,7 @@ public class DeleteAction extends CloudFormationTaskAction<CloudFormationTaskPar
         var stackName = input.stackName();
         var retainResources = input.retainResources();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
 
             log.info("Initiating deletion of stack: {}", stackName);
 

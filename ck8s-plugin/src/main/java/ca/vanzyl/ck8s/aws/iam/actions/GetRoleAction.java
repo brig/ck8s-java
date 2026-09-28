@@ -42,7 +42,7 @@ public class GetRoleAction extends IamTaskAction<GetRoleParams> {
     public TaskResult execute(Context context, GetRoleParams input) throws Exception {
         var roleName = input.roleName();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var roleOrNull = getRole(client, roleName);
             return TaskResult.success()
                     .value("role", AwsTaskUtils.serialize(roleOrNull));

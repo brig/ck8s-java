@@ -3,6 +3,7 @@ package ca.vanzyl.ck8s.aws.iam.state;
 import ca.vanzyl.ck8s.aws.iam.IamClientFactory;
 import ca.vanzyl.ck8s.aws.iam.IamTaskParams;
 import ca.vanzyl.ck8s.state.EntityState;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.services.iam.model.ListEntitiesForPolicyRequest;
 import software.amazon.awssdk.services.iam.model.NoSuchEntityException;
 import software.amazon.awssdk.services.iam.model.PolicyRole;
@@ -27,19 +28,19 @@ public class IamState {
         this.clientFactory = clientFactory;
     }
 
-    public IamRole role(IamTaskParams.BaseParams baseParams, String roleName) {
+    public IamRole role(Context context, IamTaskParams.BaseParams baseParams, String roleName) {
         return state.getOrLoad(new IamRoleKey(roleName),
-                new IamRoleLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new IamRoleLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
-    public IamManagedPolicy managedPolicy(IamTaskParams.BaseParams baseParams, String policyArn) {
+    public IamManagedPolicy managedPolicy(Context context, IamTaskParams.BaseParams baseParams, String policyArn) {
         return state.getOrLoad(new IamManagedPolicyKey(policyArn),
-                new IamManagedPolicyLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new IamManagedPolicyLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
-    public IamInlinePolicy inlinePolicy(IamTaskParams.BaseParams baseParams, String roleName, String policyName) {
+    public IamInlinePolicy inlinePolicy(Context context, IamTaskParams.BaseParams baseParams, String roleName, String policyName) {
         return state.getOrLoad(new IamInlinePolicyKey(roleName, policyName),
-                new IamInlinePolicyLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new IamInlinePolicyLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void put(IamRole role) {
@@ -62,9 +63,9 @@ public class IamState {
         state.delete(new IamManagedPolicyKey(policyArn));
     }
 
-    public List<IamRole> listRolesForPolicy(IamTaskParams.BaseParams baseParams, String policyArn) {
+    public List<IamRole> listRolesForPolicy(Context context, IamTaskParams.BaseParams baseParams, String policyArn) {
         Set<String> awsPolicyRoles = Set.of();
-        try (var client = clientFactory.create(baseParams.profile(), baseParams.region())) {
+        try (var client = clientFactory.create(context, baseParams.profile(), baseParams.region())) {
             awsPolicyRoles = client.listEntitiesForPolicyPaginator(
                             ListEntitiesForPolicyRequest.builder()
                                     .policyArn(policyArn)
@@ -86,7 +87,7 @@ public class IamState {
         }
 
         return result.stream()
-                .map(roleName -> role(baseParams, roleName))
+                .map(roleName -> role(context, baseParams, roleName))
                 .filter(Objects::nonNull)
                 .toList();
     }

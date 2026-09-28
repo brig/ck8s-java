@@ -3,6 +3,7 @@ package ca.vanzyl.ck8s.aws.cloudformation.state;
 import ca.vanzyl.ck8s.aws.cloudformation.CloudFormationClientFactory;
 import ca.vanzyl.ck8s.aws.cloudformation.CloudFormationTaskParams;
 import ca.vanzyl.ck8s.state.EntityState;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,9 +20,9 @@ public class CloudFormationState {
         this.clientFactory = clientFactory;
     }
 
-    public CloudFormationEntity stack(CloudFormationTaskParams.BaseParams baseParams, String stackName) {
+    public CloudFormationEntity stack(Context context, CloudFormationTaskParams.BaseParams baseParams, String stackName) {
         return state.getOrLoad(new CloudFormationKey(baseParams.region().id(), stackName),
-                new CloudFormationLoader(clientFactory, baseParams.profile(), baseParams.region()));
+                new CloudFormationLoader(context, clientFactory, baseParams.profile(), baseParams.region()));
     }
 
     public void deleteStack(String region, String stackName) {

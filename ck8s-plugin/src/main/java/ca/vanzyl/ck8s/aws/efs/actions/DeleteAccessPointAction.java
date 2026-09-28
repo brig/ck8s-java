@@ -30,7 +30,7 @@ public class DeleteAccessPointAction extends EfsTaskAction<EfsTaskParams.DeleteA
         var efsId = input.efsId();
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var accessPoint = FindAccessPointAction.findAccessPoint(client, efsId, name);
             if (accessPoint == null) {
                 log.info("✅ Access point '{}' does not exist", name);

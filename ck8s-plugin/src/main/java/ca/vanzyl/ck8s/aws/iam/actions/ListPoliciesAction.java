@@ -30,7 +30,7 @@ public class ListPoliciesAction extends IamTaskAction<ListPoliciesParams> {
 
     @Override
     public TaskResult execute(Context context, ListPoliciesParams input) throws Exception {
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
 
             var policies = client.listPoliciesPaginator(ListPoliciesRequest.builder().build()).stream()
                     .flatMap(p -> p.policies().stream())

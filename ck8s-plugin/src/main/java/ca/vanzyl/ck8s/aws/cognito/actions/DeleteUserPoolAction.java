@@ -28,7 +28,7 @@ public class DeleteUserPoolAction extends CognitoTaskAction<CognitoTaskParams.De
     @Override
     public TaskResult execute(Context context, CognitoTaskParams.DeleteUserPoolParams input) throws Exception {
         var poolName = input.poolName();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
 
             var poolIds = client.listUserPoolsPaginator(r -> r.maxResults(input.maxResults())).stream()
                     .flatMap(r -> r.userPools().stream())

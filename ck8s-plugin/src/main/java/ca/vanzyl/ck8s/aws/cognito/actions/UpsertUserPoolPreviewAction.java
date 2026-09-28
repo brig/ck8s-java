@@ -41,7 +41,7 @@ public class UpsertUserPoolPreviewAction extends CognitoTaskAction<CognitoTaskPa
         var name = input.poolName();
 
         var poolId = "pool_id_" + Math.abs(name.hashCode()); // TODO
-        var pool = state.userPoolByName(input.baseParams(), name, poolId);
+        var pool = state.userPoolByName(context, input.baseParams(), name, poolId);
         if (pool == null) {
             log.info("[PREVIEW] Pool '{}' does not exists. Creating it...", name);
             state.put(new UserPool(poolId, name));

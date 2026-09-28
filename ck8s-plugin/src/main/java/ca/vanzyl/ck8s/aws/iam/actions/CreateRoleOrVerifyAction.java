@@ -38,7 +38,7 @@ public class CreateRoleOrVerifyAction extends IamTaskAction<CreateRoleParams> {
 
         dumpInput(input);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var role = GetRoleAction.getRole(client, roleName);
             if (role != null) {
                 log.info("Role '{}' exists. Verifying it...", roleName);

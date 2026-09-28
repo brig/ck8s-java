@@ -49,7 +49,7 @@ public class CreateRoleOrVerifyPreviewAction extends IamTaskAction<CreateRolePar
         dumpInput(input);
 
         // just to load current
-        var role = state.role(input.baseParams(), roleName);
+        var role = state.role(context, input.baseParams(), roleName);
         if (role == null) {
             log.info("[PREVIEW] Role '{}' does not exists. Creating it...", roleName);
             state.put(IamRole.builder()

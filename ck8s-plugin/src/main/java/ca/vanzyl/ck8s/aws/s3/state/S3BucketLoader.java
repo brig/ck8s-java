@@ -1,6 +1,7 @@
 package ca.vanzyl.ck8s.aws.s3.state;
 
 import ca.vanzyl.ck8s.aws.s3.S3ClientFactory;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetBucketTaggingRequest;
@@ -15,8 +16,8 @@ import static ca.vanzyl.ck8s.aws.s3.actions.CreateBucketAction.doesBucketExist;
 
 public class S3BucketLoader extends AbstractS3EntityLoader<S3BucketKey, S3Bucket> {
 
-    public S3BucketLoader(S3ClientFactory clientFactory, String profile, Region region) {
-        super(clientFactory, profile, region);
+    public S3BucketLoader(Context context, S3ClientFactory clientFactory, String profile, Region region) {
+        super(context, clientFactory, profile, region);
     }
 
     @Override

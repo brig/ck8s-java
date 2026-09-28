@@ -41,7 +41,7 @@ public class FindUserPoolClientAction extends CognitoTaskAction<CognitoTaskParam
     public TaskResult execute(Context context, CognitoTaskParams.FindUserPoolClientParams input) throws Exception {
         var poolId = input.poolId();
         var clientName = input.clientName();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingClient = findClientByName(client, poolId, clientName);
             if (existingClient == null) {
                 return TaskResult.success();

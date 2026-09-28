@@ -41,7 +41,7 @@ public class CreateUserPoolUserPreviewAction extends CognitoTaskAction<CognitoTa
         var poolId = input.poolId();
         var username = input.username();
 
-        var existingUser = state.user(input.baseParams(), poolId, username);
+        var existingUser = state.user(context, input.baseParams(), poolId, username);
         if (existingUser == null) {
             log.info("[PREVIEW] User '{}' in user pool '{}' does not exists. Creating it...", username, poolId);
             state.put(new UserPoolUser(poolId, username));

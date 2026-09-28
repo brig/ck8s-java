@@ -47,7 +47,7 @@ public class CreateBucketPreviewAction extends S3TaskAction<CreateBucketParams> 
         dumpInput(input);
 
         // just to load current
-        var stateBucket = state.bucket(input.baseParams(), bucket);
+        var stateBucket = state.bucket(context, input.baseParams(), bucket);
         if (stateBucket == null) {
             log.info("[PREVIEW] Bucket '{}' in '{}' does not exists. Creating it...", bucket, region);
             state.put(S3Bucket.builder()

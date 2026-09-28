@@ -40,7 +40,7 @@ public class VerifyBucketAction extends S3TaskAction<CreateBucketParams> {
         var configuration = input.configuration();
         var publicAccessBlock = input.publicAccessBlock();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             if (CreateBucketAction.doesBucketExist(client, bucket)) {
                 log.info("✅ Bucket '{}' in '{}' exists...", bucket, region);
             } else {

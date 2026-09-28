@@ -37,7 +37,7 @@ public class ExistsDatabaseAction extends GlueTaskAction<GlueTaskParams.ExistsPa
     public TaskResult execute(Context context, GlueTaskParams.ExistsParams input) throws Exception {
         var name = input.databaseName();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var response = client.getDatabase(r -> r.name(name));
             return TaskResult.success()
                     .value("exists", response.database() != null);

@@ -32,7 +32,7 @@ public class UpsertUserPoolDomainAction extends CognitoTaskAction<CognitoTaskPar
         var poolId = input.poolId();
         var domain = input.domain();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingDomain = getDomain(client, poolId, domain);
             if (existingDomain == null) {
                 log.info("Domain '{}' does not exists. Creating it...", domain);

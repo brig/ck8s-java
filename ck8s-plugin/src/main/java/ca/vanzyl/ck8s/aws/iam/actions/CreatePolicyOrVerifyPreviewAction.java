@@ -42,7 +42,7 @@ public class CreatePolicyOrVerifyPreviewAction extends IamTaskAction<CreatePolic
 
         dumpInput(input);
 
-        var statePolicy = state.managedPolicy(input.baseParams(), policyArn);
+        var statePolicy = state.managedPolicy(context, input.baseParams(), policyArn);
         if (statePolicy != null) {
             var currentDocument = statePolicy.document();
             return CreatePolicyOrVerifyAction.diffPolicy(currentDocument, policyDocument);

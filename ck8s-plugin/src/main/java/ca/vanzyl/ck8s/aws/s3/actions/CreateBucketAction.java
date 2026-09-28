@@ -37,7 +37,7 @@ public class CreateBucketAction extends S3TaskAction<CreateBucketParams> {
 
         dumpInput(input);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             if (doesBucketExist(client, bucket)) {
                 log.info("Bucket '{}' in '{}' exists. Updating it...", bucket, region);
             } else {

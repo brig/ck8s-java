@@ -30,7 +30,7 @@ public class GetSecretAction extends AsmTaskAction<AsmTaskParams.GetSecretParams
     public TaskResult execute(Context context, AsmTaskParams.GetSecretParams input) throws Exception {
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var response = client.getSecretValue(r -> r.secretId(name));
 
             return TaskResult.success()

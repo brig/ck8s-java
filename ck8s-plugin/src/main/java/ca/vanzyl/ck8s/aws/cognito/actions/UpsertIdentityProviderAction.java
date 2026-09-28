@@ -39,7 +39,7 @@ public class UpsertIdentityProviderAction extends CognitoTaskAction<CognitoTaskP
         var providerDetails = input.providerDetails();
         var attributeMapping = input.attributeMapping();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingProvider = findIdentityProviderByName(client, poolId, providerName);
             if (existingProvider != null) {
                 log.info("Identity provider '{}' exists in pool '{}'. Updating it...", providerName, poolId);

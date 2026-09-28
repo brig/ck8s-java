@@ -41,7 +41,7 @@ public class VerifyResourceServerAction extends CognitoTaskAction<CognitoTaskPar
         var identifier = input.identifier();
         var scopes = input.scopes();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingServer = UpsertResourceServerAction.getResourceServer(client, poolId, identifier);
             if (existingServer == null) {
                 log.error("❌ Resource server '{}' does not exists in pool '{}'", identifier, poolId);

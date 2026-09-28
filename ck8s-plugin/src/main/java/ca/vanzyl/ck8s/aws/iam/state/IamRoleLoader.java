@@ -3,6 +3,7 @@ package ca.vanzyl.ck8s.aws.iam.state;
 import ca.vanzyl.ck8s.aws.iam.IamClientFactory;
 import ca.vanzyl.ck8s.aws.iam.actions.AttachPolicyAction;
 import ca.vanzyl.ck8s.aws.iam.actions.GetRoleAction;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.ListRolePoliciesRequest;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class IamRoleLoader extends AbstractIamEntityLoader<IamRoleKey, IamRole> {
 
-    public IamRoleLoader(IamClientFactory clientFactory, String profile, Region region) {
-        super(clientFactory, profile, region);
+    public IamRoleLoader(Context context, IamClientFactory clientFactory, String profile, Region region) {
+        super(context, clientFactory, profile, region);
     }
 
     @Override

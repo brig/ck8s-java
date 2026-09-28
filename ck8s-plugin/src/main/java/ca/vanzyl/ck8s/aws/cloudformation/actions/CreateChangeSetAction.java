@@ -40,7 +40,7 @@ public class CreateChangeSetAction extends CloudFormationTaskAction<CloudFormati
         var parameters = input.parameterOverrides();
         var capabilities = input.capabilities();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             CreateChangeSetRequest.Builder request = CreateChangeSetRequest.builder()
                     .stackName(stackName)
                     .changeSetName(changeSetName)

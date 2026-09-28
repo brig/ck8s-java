@@ -41,13 +41,13 @@ public class UpsertUserPoolClientPreviewAction extends CognitoTaskAction<Cognito
         var poolId = input.poolId();
         var clientName = input.name();
 
-        var pool = state.userPoolById(input.baseParams(), poolId);
+        var pool = state.userPoolById(context, input.baseParams(), poolId);
         if (pool == null) {
             log.info("[PREVIEW] Can't find user pool '{}' for client '{}'", poolId, clientName);
             return TaskResult.fail("User pool '" + poolId + "' does not exist.");
         }
 
-        var userPoolClient = state.userPoolClient(input.baseParams(), poolId, clientName);
+        var userPoolClient = state.userPoolClient(context, input.baseParams(), poolId, clientName);
         if (userPoolClient == null) {
             log.info("[PREVIEW] User pool client '{}' in '{}' user pool does not exists. Creating it...", clientName, poolId);
 

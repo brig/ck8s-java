@@ -41,13 +41,13 @@ public class UpsertIdentityProviderPreviewAction extends CognitoTaskAction<Cogni
         var poolId = input.poolId();
         var name = input.providerName();
 
-        var pool = state.userPoolById(input.baseParams(), poolId);
+        var pool = state.userPoolById(context, input.baseParams(), poolId);
         if (pool == null) {
             log.info("[PREVIEW] Can't find user pool '{}' for identity provider '{}'", poolId, name);
             return TaskResult.fail("User pool '" + poolId + "' does not exist.");
         }
 
-        var identityProvider = state.identityProvider(input.baseParams(), poolId, name);
+        var identityProvider = state.identityProvider(context, input.baseParams(), poolId, name);
         if (identityProvider == null) {
             log.info("[PREVIEW] Identity provider '{}' does not exists. Creating it...", name);
             state.put(new IdentityProvider(poolId, name));

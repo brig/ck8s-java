@@ -45,7 +45,7 @@ public class VerifyBucketTagsAction extends S3TaskAction<S3TaskParams.TagBucketP
         var bucket = input.bucket();
         var tags = input.tags();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var exists = doesBucketExist(client, bucket);
             if (!exists) {
                 log.error("❌ Bucket '{}' does not exists", bucket);

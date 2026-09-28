@@ -42,7 +42,7 @@ public class UpsertUserPoolAction extends CognitoTaskAction<CognitoTaskParams.Cr
         var schema = input.schema();
         var tags = input.tags();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var poolId = finPoolIdByName(client, poolName);
             if (poolId == null) {
                 log.info("User pool '{}' does not exists. Creating it...", poolName);

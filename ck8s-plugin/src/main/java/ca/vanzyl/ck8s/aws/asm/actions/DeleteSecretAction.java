@@ -30,7 +30,7 @@ public class DeleteSecretAction extends AsmTaskAction<AsmTaskParams.DeleteSecret
     public TaskResult execute(Context context, AsmTaskParams.DeleteSecretParams input) throws Exception {
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             client.deleteSecret(r -> r.secretId(name)
                     .forceDeleteWithoutRecovery(false));
 

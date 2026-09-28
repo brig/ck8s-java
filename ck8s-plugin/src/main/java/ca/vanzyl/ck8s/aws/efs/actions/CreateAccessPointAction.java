@@ -32,7 +32,7 @@ public class CreateAccessPointAction extends EfsTaskAction<EfsTaskParams.CreateA
         var tags = input.tags();
         var name = input.name();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existing = FindAccessPointAction.findAccessPoint(client, efsId, name);
             if (existing != null) {
                 log.info("✅ Access point '{}' already exists (id: {}). Do nothing...", name, existing.accessPointId());

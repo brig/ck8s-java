@@ -36,7 +36,7 @@ public class DeleteRolePreviewAction extends IamTaskAction<DeleteRoleParams> {
     public TaskResult execute(Context context, DeleteRoleParams input) throws Exception {
         var roleName = input.roleName();
 
-        var stateRole = state.role(input.baseParams(), roleName);
+        var stateRole = state.role(context, input.baseParams(), roleName);
         if (stateRole != null) {
             state.deleteRole(roleName);
         }

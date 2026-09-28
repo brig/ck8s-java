@@ -44,12 +44,12 @@ public class PutPolicyOrVerifyPreviewAction extends IamTaskAction<PutRolePolicyP
         var policyName = input.policyName();
         var policyDocument = input.policyDocument();
 
-        var role = state.role(input.baseParams(), roleName);
+        var role = state.role(context, input.baseParams(), roleName);
         if (role == null) {
             return TaskResult.fail("Role '" + roleName + "' not found");
         }
 
-        var statePolicy = state.inlinePolicy(input.baseParams(), roleName, policyName);
+        var statePolicy = state.inlinePolicy(context, input.baseParams(), roleName, policyName);
         if (statePolicy != null) {
             log.info("[PREVIEW] Inline policy '{}' for role '{}' exists. Verifying it...", policyName, roleName);
             var valid = verifyPolicyDocument(statePolicy.document(), policyDocument);

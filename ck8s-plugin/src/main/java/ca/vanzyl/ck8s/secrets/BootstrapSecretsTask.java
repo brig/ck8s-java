@@ -96,7 +96,7 @@ public class BootstrapSecretsTask
         }
 
         log.info("Deleting secret '{}' ({})", secretName, retriever);
-        retriever.delete(secretName);
+        retriever.delete(context, secretName);
     }
 
     @SensitiveData
@@ -137,7 +137,7 @@ public class BootstrapSecretsTask
         }
 
         log.info("Adding secret '{}' ({})", secretName, retriever);
-        retriever.put(secretName, value, description);
+        retriever.put(context, secretName, value, description);
     }
 
     @SensitiveData
@@ -145,7 +145,7 @@ public class BootstrapSecretsTask
     {
         SecretsRetriever retriever = secretsRetrieverProvider.create(context, secretsDocument);
 
-        String value = retriever.get(secretName);
+        String value = retriever.get(context, secretName);
         if (value == null || value.trim().isEmpty()) {
             log.warn("got empty value for the secret '{}'", secretName);
             return null;

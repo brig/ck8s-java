@@ -34,7 +34,7 @@ public class ExecuteChangeSetAction extends CloudFormationTaskAction<CloudFormat
         var stackName = input.stackName();
         var changeSetName = input.changeSetName();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             log.info("CloudFormation stack '{}' change set '{}' execute initiated...", stackName, changeSetName);
 
             client.executeChangeSet(ExecuteChangeSetRequest.builder()

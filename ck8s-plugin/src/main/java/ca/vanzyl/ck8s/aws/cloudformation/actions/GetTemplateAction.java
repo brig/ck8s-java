@@ -35,7 +35,7 @@ public class GetTemplateAction extends CloudFormationTaskAction<CloudFormationTa
     @Override
     public TaskResult execute(Context context, CloudFormationTaskParams.GetTemplateParams input) {
         var stackName = input.stackName();
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var body = client.getTemplate(r -> r.stackName(stackName)).templateBody();
 
             return TaskResult.success()

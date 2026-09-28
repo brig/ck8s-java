@@ -35,7 +35,7 @@ public class PutPolicyAction extends IamTaskAction<PutRolePolicyParams> {
 
         dumpInput(input);
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             log.info("Putting inline policy '{}' to role '{}'...", policyName, roleName);
 
             client.putRolePolicy(PutRolePolicyRequest.builder()

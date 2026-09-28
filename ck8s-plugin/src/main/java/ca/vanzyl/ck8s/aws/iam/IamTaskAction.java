@@ -18,12 +18,12 @@ public abstract class IamTaskAction<T extends IamTaskParams> implements TaskActi
         this.clientFactory = clientFactory;
     }
 
-    protected IamClient createClient(IamTaskParams input) {
-        return createClient(input.baseParams());
+    protected IamClient createClient(Context context, IamTaskParams input) {
+        return createClient(context, input.baseParams());
     }
 
-    protected IamClient createClient(IamTaskParams.BaseParams params) {
-        return clientFactory.create(params.profile(), params.region());
+    protected IamClient createClient(Context context, IamTaskParams.BaseParams params) {
+        return clientFactory.create(context, params.profile(), params.region());
     }
 
     public enum Action implements ActionName {

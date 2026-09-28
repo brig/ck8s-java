@@ -45,7 +45,7 @@ public class TagBucketPreviewAction extends S3TaskAction<TagBucketParams> {
         var region = input.baseParams().region();
 
         // just to load current
-        var stateBucket = state.bucket(input.baseParams(), bucket);
+        var stateBucket = state.bucket(context, input.baseParams(), bucket);
         if (stateBucket == null) {
             return TaskResult.fail("Bucket '" + bucket + "' not found");
         } else {

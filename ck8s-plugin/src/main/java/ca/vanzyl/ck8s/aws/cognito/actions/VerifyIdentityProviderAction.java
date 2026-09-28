@@ -44,7 +44,7 @@ public class VerifyIdentityProviderAction extends CognitoTaskAction<CognitoTaskP
         var providerDetails = input.providerDetails();
         var attributeMapping = input.attributeMapping();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var existingProvider = client.describeIdentityProvider(r -> r.userPoolId(poolId)
                     .providerName(providerName));
 

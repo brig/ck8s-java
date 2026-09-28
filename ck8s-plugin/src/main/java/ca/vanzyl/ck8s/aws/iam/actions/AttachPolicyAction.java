@@ -37,7 +37,7 @@ public class AttachPolicyAction extends IamTaskAction<AttachPolicyParams> {
         var policyName = input.policyName();
         var policyArn = input.policyArn();
 
-        try (var client = createClient(input)) {
+        try (var client = createClient(context, input)) {
             var attachedPolicies = attachedPolicies(client, roleName);
             if (attachedPolicies.contains(policyArn)) {
                 log.info("✅ Policy '{}' is already attached to role '{}'", policyName, roleName);

@@ -14,8 +14,8 @@ public abstract class CloudFormationTaskAction<T extends CloudFormationTaskParam
         this.clientFactory = clientFactory;
     }
 
-    protected CloudFormationClient createClient(CloudFormationTaskParams input) {
-        return clientFactory.create(input.baseParams().profile(), input.baseParams().region());
+    protected CloudFormationClient createClient(Context context, CloudFormationTaskParams input) {
+        return clientFactory.create(context, input.baseParams().profile(), input.baseParams().region());
     }
 
     @Override

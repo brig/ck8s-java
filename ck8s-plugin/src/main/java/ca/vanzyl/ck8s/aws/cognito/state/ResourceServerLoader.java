@@ -2,12 +2,13 @@ package ca.vanzyl.ck8s.aws.cognito.state;
 
 import ca.vanzyl.ck8s.aws.cognito.CognitoClientFactory;
 import ca.vanzyl.ck8s.aws.cognito.actions.UpsertResourceServerAction;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.regions.Region;
 
 public class ResourceServerLoader extends AbstractCognitoEntityLoader<ResourceServerKey, ResourceServer> {
 
-    public ResourceServerLoader(CognitoClientFactory clientFactory, String profile, Region region) {
-        super(clientFactory, profile, region);
+    public ResourceServerLoader(Context context, CognitoClientFactory clientFactory, String profile, Region region) {
+        super(context, clientFactory, profile, region);
     }
 
     @Override

@@ -2,12 +2,13 @@ package ca.vanzyl.ck8s.aws.cognito.state;
 
 import ca.vanzyl.ck8s.aws.cognito.CognitoClientFactory;
 import ca.vanzyl.ck8s.aws.cognito.actions.UpsertUserPoolClientAction;
+import com.walmartlabs.concord.runtime.v2.sdk.Context;
 import software.amazon.awssdk.regions.Region;
 
 public class UserPoolClientLoader extends AbstractCognitoEntityLoader<UserPoolClientKey, UserPoolClient> {
 
-    public UserPoolClientLoader(CognitoClientFactory clientFactory, String profile, Region region) {
-        super(clientFactory, profile, region);
+    public UserPoolClientLoader(Context context, CognitoClientFactory clientFactory, String profile, Region region) {
+        super(context, clientFactory, profile, region);
     }
 
     @Override
