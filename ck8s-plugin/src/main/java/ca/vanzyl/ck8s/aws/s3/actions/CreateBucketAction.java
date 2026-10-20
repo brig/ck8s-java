@@ -47,13 +47,15 @@ public class CreateBucketAction extends S3TaskAction<CreateBucketParams> {
                 createBucket(client, bucket, configuration);
             }
 
-            ensurePublicAccessBlock(client, bucket, publicAccessBlock);
-            if (versioning) {
-                setBucketVersioning(client, bucket, versioning);
-            }
+            // Tag first: tag-based access policies may depend on the tags for the calls below.
             // putBucketTagging replaces the whole tag set, so only touch the tags when some were requested
             if (!tags.isEmpty()) {
                 setBucketTags(client, bucket, tags);
+            }
+
+            ensurePublicAccessBlock(client, bucket, publicAccessBlock);
+            if (versioning) {
+                setBucketVersioning(client, bucket, versioning);
             }
 
             return TaskResult.success();
