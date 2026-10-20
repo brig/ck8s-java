@@ -28,8 +28,8 @@ public final class VariablesS3TaskParams {
                 assertBucketName(variables),
                 configuration(variables),
                 publicAccessBlock(variables),
-                versioningEnabled(variables)
-
+                versioningEnabled(variables),
+                tags(variables)
         );
     }
 
@@ -92,7 +92,7 @@ public final class VariablesS3TaskParams {
         return variables.getBoolean(DEBUG_KEY, defaultValue);
     }
 
-    private static List<Tag> tags(Variables variables) {
+    static List<Tag> tags(Variables variables) {
         return variables.getMap(TAGS_KEY, Map.of()).entrySet().stream()
                 .map(t -> Tag.builder()
                         .key(String.valueOf(t.getKey()))

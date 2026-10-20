@@ -10,8 +10,11 @@ import com.walmartlabs.concord.runtime.v2.sdk.TaskResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import software.amazon.awssdk.services.s3.model.Tag;
+
 import javax.inject.Inject;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ca.vanzyl.ck8s.aws.s3.S3TaskParams.CreateBucketParams;
 import static ca.vanzyl.ck8s.aws.s3.actions.CreateBucketAction.dumpInput;
@@ -43,6 +46,7 @@ public class CreateBucketPreviewAction extends S3TaskAction<CreateBucketParams> 
         var bucket = input.bucket();
         var region = input.baseParams().region();
         var publicAccessBlock = input.publicAccessBlock();
+        var tags = input.tags().stream().collect(Collectors.toMap(Tag::key, Tag::value));
 
         dumpInput(input);
 
@@ -53,13 +57,18 @@ public class CreateBucketPreviewAction extends S3TaskAction<CreateBucketParams> 
             state.put(S3Bucket.builder()
                     .bucketName(bucket)
                     .publicAccessBlock(publicAccessBlock)
+                    .tags(tags)
                     .build());
         } else {
             log.info("[PREVIEW] Bucket '{}' in '{}' exists. Updating it...", bucket, region);
-            state.put(S3Bucket.builder().from(stateBucket)
+            var updated = S3Bucket.builder().from(stateBucket)
                     .bucketName(bucket)
-                    .publicAccessBlock(publicAccessBlock)
-                    .build());
+                    .publicAccessBlock(publicAccessBlock);
+            // same as the real action: tags are replaced only when some were requested
+            if (!tags.isEmpty()) {
+                updated.tags(tags);
+            }
+            state.put(updated.build());
         }
 
         return TaskResult.success();

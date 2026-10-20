@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import javax.inject.Inject;
+import java.util.List;
 
 import static ca.vanzyl.ck8s.aws.s3.S3TaskParams.CreateBucketParams;
 
@@ -34,6 +35,7 @@ public class CreateBucketAction extends S3TaskAction<CreateBucketParams> {
         var configuration = input.configuration();
         var publicAccessBlock = input.publicAccessBlock();
         var versioning = input.versioning();
+        var tags = input.tags();
 
         dumpInput(input);
 
@@ -48,6 +50,10 @@ public class CreateBucketAction extends S3TaskAction<CreateBucketParams> {
             ensurePublicAccessBlock(client, bucket, publicAccessBlock);
             if (versioning) {
                 setBucketVersioning(client, bucket, versioning);
+            }
+            // putBucketTagging replaces the whole tag set, so only touch the tags when some were requested
+            if (!tags.isEmpty()) {
+                setBucketTags(client, bucket, tags);
             }
 
             return TaskResult.success();
@@ -152,11 +158,25 @@ public class CreateBucketAction extends S3TaskAction<CreateBucketParams> {
         }
     }
 
+    private static void setBucketTags(S3Client client, String bucketName, List<Tag> tags) {
+        try {
+            client.putBucketTagging(PutBucketTaggingRequest.builder()
+                    .bucket(bucketName)
+                    .tagging(Tagging.builder().tagSet(tags).build())
+                    .build());
+            log.info("✅ Tags set for bucket: {}", bucketName);
+        } catch (S3Exception e) {
+            log.error("❌ Failed to set tags for bucket '{}': {}", bucketName, e.awsErrorDetails().errorMessage());
+            throw new RuntimeException("Failed to set bucket tags: " + e.awsErrorDetails().errorMessage(), e);
+        }
+    }
+
     public static void dumpInput(CreateBucketParams input) {
         if (input.baseParams().debug()) {
             log.info("Bucket:\n{}", input.bucket());
             log.info("Configuration:\n{}", input.configuration());
             log.info("Public Access Block Configuration:\n{}", input.publicAccessBlock());
+            log.info("Tags:\n{}", input.tags());
         }
     }
 }

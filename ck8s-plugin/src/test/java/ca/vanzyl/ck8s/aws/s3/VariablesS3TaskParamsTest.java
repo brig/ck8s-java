@@ -28,6 +28,19 @@ public class VariablesS3TaskParamsTest {
     }
 
     @Test
+    public void testCreateBucketTags() {
+        var params = VariablesS3TaskParams.tags(new MapBackedVariables(Map.of("tags", Map.of("dv-app-name", "rwegen"))));
+        assertEquals(1, params.size());
+        assertEquals("dv-app-name", params.get(0).key());
+        assertEquals("rwegen", params.get(0).value());
+    }
+
+    @Test
+    public void testTagsAreOptional() {
+        assertTrue(VariablesS3TaskParams.tags(new MapBackedVariables(Map.of())).isEmpty());
+    }
+
+    @Test
     public void testBucketConfigurationDeserialize() {
         var m = new HashMap<String, Object>();
         m.put("LocationConstraint", BucketLocationConstraint.US_EAST_2.toString());
