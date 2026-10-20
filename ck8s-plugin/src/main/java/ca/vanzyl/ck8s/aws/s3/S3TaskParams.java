@@ -18,8 +18,8 @@ public interface S3TaskParams extends ActionInput {
             String bucket,
             CreateBucketConfiguration configuration,
             PublicAccessBlockConfiguration publicAccessBlock,
-            boolean versioning
-
+            boolean versioning,
+            List<Tag> tags
     ) implements S3TaskParams {
     }
 
