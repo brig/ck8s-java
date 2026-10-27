@@ -22,6 +22,20 @@
     <dependencies>
         <dependency>
             <groupId>ca.vanzyl.concord.ck8s</groupId>
+            <artifactId>ck8s-agent-dist</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+            <!-- build order only, the contents are copied from the module's target/dist -->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>ca.vanzyl.concord.ck8s</groupId>
             <artifactId>ck8s-plugin</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
@@ -30,36 +44,28 @@
 
     <build>
         <plugins>
-            <!-- Can probably replace with this provisio -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.6.1</version>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-docker-stuff</id>
+                        <id>copy-dist</id>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.walmartlabs.concord</groupId>
-                                    <artifactId>concord-agent</artifactId>
-                                    <version>${concord.version}</version>
-                                    <classifier>dist</classifier>
-                                    <type>tar.gz</type>
-                                    <destFileName>agent.tar.gz</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dist</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../ck8s-agent-dist/target/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>dev.ybrig.concord</groupId>
                 <artifactId>dependency-downloader-maven-plugin</artifactId>
