@@ -45,7 +45,7 @@ jobs:
       - name: Install concord
         if: env.concordRef != ''
         working-directory: .concord
-        run: ./mvnw -B install -DskipTests -am -pl agent,client2,common,config,imports,it/testing-server,repository,sdk,targetplatform,plugins/tasks/concord,plugins/tasks/crypto,plugins/tasks/lock,runtime/common,runtime/model,runtime/v2/model,runtime/v2/runner,runtime/v2/sdk,runtime/v2/vm,server/db,server/dist,server/impl,server/sdk,server/plugins/ansible/impl,server/plugins/noderoster/impl,server/plugins/oneops
+        run: ./mvnw -B install -DskipTests -am -pl agent,client2,common,config,docker-images/agent,docker-images/server,imports,it/testing-server,repository,sdk,targetplatform,plugins/tasks/concord,plugins/tasks/crypto,plugins/tasks/lock,runtime/common,runtime/model,runtime/v2/model,runtime/v2/runner,runtime/v2/sdk,runtime/v2/vm,server/db,server/dist,server/impl,server/sdk,server/plugins/ansible/impl,server/plugins/noderoster/impl,server/plugins/oneops
 
       - name: Build
         run: ./mvnw -B clean install
