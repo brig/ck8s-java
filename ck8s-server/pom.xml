@@ -79,6 +79,20 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ca.vanzyl.concord.ck8s</groupId>
+            <artifactId>ck8s-server-dist</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+            <!-- build order only, the contents are copied from the module's target/dist -->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -241,6 +255,24 @@
             <groupId>com.walmartlabs.concord.server</groupId>
             <artifactId>concord-server</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.walmartlabs.concord.server.plugins</groupId>
+                    <artifactId>concord-oneops-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.walmartlabs.concord.server.plugins</groupId>
+                    <artifactId>iam-sso</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.walmartlabs.concord.server.plugins.ansible</groupId>
+                    <artifactId>concord-ansible-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.walmartlabs.concord.server.plugins.noderoster</groupId>
+                    <artifactId>concord-noderoster-plugin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -259,29 +291,30 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-docker-stuff</id>
+                        <id>copy-dist</id>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>copy-resources</goal>
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.walmartlabs.concord.server</groupId>
-                                    <artifactId>concord-server</artifactId>
-                                    <version>${concord.version}</version>
-                                    <classifier>dist</classifier>
-                                    <type>tar.gz</type>
-                                    <destFileName>server.tar.gz</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dist</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../ck8s-server-dist/target/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
                     <execution>
                         <id>copy-dependencies</id>
                         <goals>

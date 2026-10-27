@@ -1,7 +1,8 @@
 ARG MAVEN_VERSION
 FROM ghcr.io/concord-workflow/ck8s/ck8s-common-base-image:latest
 
-ADD --chown=concord:concord target/server.tar.gz /opt/concord/server/
+COPY --chown=concord:concord target/dist/ /opt/concord/server/
+COPY --chown=concord:concord --chmod=755 target/dist/start.sh /opt/concord/server/start.sh
 
 ARG MAVEN_VERSION
 ADD --chown=concord:concord target/ck8s-server-${MAVEN_VERSION} /opt/concord/server/ext

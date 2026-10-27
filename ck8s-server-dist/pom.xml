@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ca.vanzyl.concord.ck8s</groupId>
+        <artifactId>ck8s</artifactId>
+        <version>3.0.5-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ck8s-server-dist</artifactId>
+    <packaging>pom</packaging>
+    <name>CK8s :: Server Dist</name>
+
+    <description>Assembles the Concord server distribution (target/dist: lib/, start.sh, default.conf),
+        which used to be published by Concord as concord-server:tar.gz:dist.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.walmartlabs.concord.server</groupId>
+            <artifactId>concord-server</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-runtime-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <includeTypes>jar</includeTypes>
+                            <outputDirectory>${project.build.directory}/dist/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-image-resources</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.walmartlabs.concord.docker</groupId>
+                                    <artifactId>concord-server</artifactId>
+                                    <version>${concord.version}</version>
+                                    <classifier>image-resources</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/dist</outputDirectory>
+                                    <excludes>META-INF/**</excludes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
