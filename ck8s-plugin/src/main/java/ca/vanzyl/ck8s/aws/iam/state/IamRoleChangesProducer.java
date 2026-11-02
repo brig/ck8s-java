@@ -25,11 +25,15 @@ public class IamRoleChangesProducer implements EntityChangeProducer<IamRoleKey, 
         }
 
         if (current == null) {
-            return List.of(Change.delete(IamChangeType.roleId(prev.roleName()))
+            var changes = new ArrayList<Change>();
+            changes.add(Change.delete(IamChangeType.roleId(prev.roleName()))
                     .type(IamChangeType.ROLE_TYPE)
                     .metadata(Change.Metadata.builder().name(prev.roleName()).build())
                     .timestamp(lastModified)
                     .build());
+            // deleting a role also removes its trust policy, tags, inline policies and detaches managed policies
+            changes.addAll(diff(prev, IamRole.builder().roleName(prev.roleName()).build()));
+            return changes;
         }
 
         var action = Change.Action.UPDATE;
