@@ -73,7 +73,7 @@
         <provisio.version>1.0.12</provisio.version>
         <repositorybrowserplugin.version>1.0.1</repositorybrowserplugin.version>
         <snakeyaml.engine.version>3.0.1</snakeyaml.engine.version>
-        <testcontainers.version>1.19.1</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <!-- testing-concord-server version must be a release version of Concord -->
         <testing.concord.server.version>2.23.0</testing.concord.server.version>
     </properties>
