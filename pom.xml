@@ -71,7 +71,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <protobuf.version>4.33.2</protobuf.version>
         <provisio.version>1.0.12</provisio.version>
-        <repositorybrowserplugin.version>1.0.1</repositorybrowserplugin.version>
         <snakeyaml.engine.version>3.0.1</snakeyaml.engine.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <!-- testing-concord-server version must be a release version of Concord -->
@@ -119,11 +118,6 @@
                 <version>${aws.sdkv2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>ca.ibodrov.concord</groupId>
-                <artifactId>repository-browser-plugin</artifactId>
-                <version>${repositorybrowserplugin.version}</version>
             </dependency>
             <dependency>
                 <groupId>ca.vanzyl.concord.ck8s</groupId>
@@ -670,7 +664,7 @@
                 </plugin>
                 <plugin>
                     <groupId>io.swagger.core.v3</groupId>
-                    <artifactId>swagger-maven-plugin</artifactId>
+                    <artifactId>swagger-maven-plugin-jakarta</artifactId>
                     <version>2.2.16</version>
                 </plugin>
                 <plugin>

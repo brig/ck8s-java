@@ -11,7 +11,7 @@ import dev.ybrig.ck8s.cli.common.Ck8sConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
 
 import static ca.vanzyl.concord.k8s.PayloadUtils.mergeArg;

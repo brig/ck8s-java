@@ -10,15 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import java.io.IOException;
 
-@javax.ws.rs.Path("/api/ck8s/v3/process")
+@jakarta.ws.rs.Path("/api/ck8s/v3/process")
 @Tag(name = "Ck8s")
 public class Ck8sProcessResourceV3 implements Resource {
 
@@ -35,7 +35,7 @@ public class Ck8sProcessResourceV3 implements Resource {
     }
 
     @POST
-    @javax.ws.rs.Path("/{path: .*}")
+    @jakarta.ws.rs.Path("/{path: .*}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @WithTimer
