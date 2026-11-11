@@ -50,14 +50,14 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -70,7 +70,7 @@ import java.util.*;
 @Deprecated
 @Named
 @Singleton
-@javax.ws.rs.Path("/api/ck8s/v2/process")
+@jakarta.ws.rs.Path("/api/ck8s/v2/process")
 @Tag(name = "Ck8s")
 public class Ck8sProcessResourceV2 implements Resource {
 
@@ -111,7 +111,7 @@ public class Ck8sProcessResourceV2 implements Resource {
     }
 
     @POST
-    @javax.ws.rs.Path("{id}/state")
+    @jakarta.ws.rs.Path("{id}/state")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @Operation(description = "Upload process attachments", operationId = "uploadProcessState")
     @RequestBody(description = "Attachment content", required = true,
@@ -159,7 +159,7 @@ public class Ck8sProcessResourceV2 implements Resource {
     }
 
     @POST
-    @javax.ws.rs.Path("debug/{path: .*}")
+    @jakarta.ws.rs.Path("debug/{path: .*}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @WithTimer

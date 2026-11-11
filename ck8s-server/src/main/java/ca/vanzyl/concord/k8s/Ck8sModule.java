@@ -19,6 +19,7 @@ public class Ck8sModule implements Module {
         bindJaxRsResource(binder, Ck8sClusterResourceV2.class);
         bindJaxRsResource(binder, ConcordExtResource.class);
         bindJaxRsResource(binder, Ck8sApiKeyResource.class);
+        bindJaxRsResource(binder, RepositoryBrowserResource.class);
 
         newSetBinder(binder, CustomEnqueueProcessor.class).addBinding().to(Ck8sRequestAttachmentProcessor.class);
         newSetBinder(binder, CustomEnqueueProcessor.class).addBinding().to(Ck8sArgumentsProcessor.class);
